@@ -2,7 +2,7 @@
 //  ContentView.swift
 //  GiaVangVN
 //
-//  Created by L7 Mobile on 15/10/25.
+//  Created by ORL on 15/10/25.
 //
 
 import SwiftUI
