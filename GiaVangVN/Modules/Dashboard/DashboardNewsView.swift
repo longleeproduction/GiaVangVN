@@ -135,6 +135,14 @@ struct DashboardNewsView: View {
 
 struct NewsItemCard: View {
     let newsItem: NewsResponse.NewsItem
+    
+    
+    class NewsItemCardViewModel: ObservableObject {
+        @Published var previewUrl: URL?
+        @Published var isPresent: Bool = false
+    }
+    
+    @StateObject private var viewModel = NewsItemCardViewModel()
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -206,7 +214,20 @@ struct NewsItemCard: View {
         .onTapGesture {
             // Open news URL
             if let url = URL(string: newsItem.url) {
-                UIApplication.shared.open(url)
+                viewModel.previewUrl = url
+                viewModel.isPresent.toggle()
+            }
+        }
+        .fullScreenCover(isPresented: $viewModel.isPresent) {
+            if let url = viewModel.previewUrl {
+                SFSafariView(url: url)
+            } else {
+                Button {
+                    viewModel.isPresent.toggle()
+                } label: {
+                    Label("Trở về", systemImage: "arrow.uturn.backward")
+                }
+
             }
         }
     }

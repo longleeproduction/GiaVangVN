@@ -39,20 +39,16 @@ struct DashboardGoldView: View {
 
     @ViewBuilder
     func buildChart(data: GoldListData) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 8) {
             // Header
             VStack(alignment: .leading, spacing: 4) {
                 Text(data.title)
                     .font(.headline)
                     .foregroundColor(.primary)
-
-                Text(data.subTitle)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
             }
             .padding(.horizontal)
 
-            // Chart - need revert to larger
+            // Chart
             let chartData = prepareChartData(from: data.list.reversed())
 
             if chartData.isEmpty {
@@ -66,15 +62,23 @@ struct DashboardGoldView: View {
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
+                let (minPrice, maxPrice) = calculatePriceRange(from: chartData)
+
                 Chart {
                     // Buy price line
                     ForEach(chartData) { item in
                         LineMark(
                             x: .value("Ngày", item.date),
-                            y: .value("Mua vào", item.buyPrice)
+                            y: .value("Mua vào", item.buyPrice),
+                            series: .value("Mua vào", "Mua vào")
                         )
                         .foregroundStyle(.green)
-                        .symbol(Circle())
+                        .symbol {
+                            Circle()
+                                .fill(.green)
+                                .frame(width: 6, height: 6)
+                        }
+                        .lineStyle(StrokeStyle(lineWidth: 2))
                         .interpolationMethod(.catmullRom)
                     }
 
@@ -82,10 +86,16 @@ struct DashboardGoldView: View {
                     ForEach(chartData) { item in
                         LineMark(
                             x: .value("Ngày", item.date),
-                            y: .value("Bán ra", item.sellPrice)
+                            y: .value("Bán ra", item.sellPrice),
+                            series: .value("Bán ra", "Bán ra")
                         )
                         .foregroundStyle(.red)
-                        .symbol(Circle())
+                        .symbol {
+                            Circle()
+                                .fill(.red)
+                                .frame(width: 6, height: 6)
+                        }
+                        .lineStyle(StrokeStyle(lineWidth: 2))
                         .interpolationMethod(.catmullRom)
                     }
                 }
@@ -95,23 +105,24 @@ struct DashboardGoldView: View {
                             AxisValueLabel {
                                 Text(dateString)
                                     .font(.caption2)
-                                    .rotationEffect(.degrees(-45))
                             }
+                            AxisTick()
                         }
                     }
                 }
                 .chartYAxis {
                     AxisMarks(position: .leading) { value in
-                        AxisValueLabel {
-                            if let price = value.as(Double.self) {
+                        if let price = value.as(Double.self), price > 0 {
+                            AxisValueLabel {
                                 Text(formatPrice(price))
                                     .font(.caption2)
                             }
+                            AxisGridLine()
                         }
-                        AxisGridLine()
                     }
                 }
-                .chartLegend(position: .bottom) {
+                .chartYScale(domain: minPrice...maxPrice)
+                .chartLegend(position: .bottom, spacing: 8) {
                     HStack(spacing: 20) {
                         HStack(spacing: 4) {
                             Circle()
@@ -132,7 +143,9 @@ struct DashboardGoldView: View {
                         }
                     }
                 }
-                .padding()
+                .frame(maxHeight: .infinity)
+                .padding(.horizontal)
+                .padding(.bottom, 8)
             }
         }
     }
@@ -146,7 +159,11 @@ struct DashboardGoldView: View {
             // Decrypt buy and sell prices
             let buyPriceString = ApiDecryptor.decrypt(item.buy)
             let sellPriceString = ApiDecryptor.decrypt(item.sell)
-            guard let buyPrice = Double(buyPriceString), let sellPrice = Double(sellPriceString) else {
+            guard let buyPrice = Double(buyPriceString),
+                  let sellPrice = Double(sellPriceString),
+                  buyPrice > 0,  // Filter out 0 values
+                  sellPrice > 0  // Filter out 0 values
+            else {
                 continue
             }
 
@@ -166,6 +183,29 @@ struct DashboardGoldView: View {
 
         // Sort by date (oldest to newest)
         return chartData
+    }
+
+    private func calculatePriceRange(from chartData: [ChartDataPoint]) -> (Double, Double) {
+        guard !chartData.isEmpty else { return (0, 100) }
+
+        var allPrices: [Double] = []
+        for dataPoint in chartData {
+            allPrices.append(dataPoint.buyPrice)
+            allPrices.append(dataPoint.sellPrice)
+        }
+
+        guard let minValue = allPrices.min(),
+              let maxValue = allPrices.max() else {
+            return (0, 100)
+        }
+
+        // Add padding to make the chart more readable (5% on each side)
+        let range = maxValue - minValue
+        let padding = range * 0.05
+        let minPrice = max(0, minValue - padding)
+        let maxPrice = maxValue + padding
+
+        return (minPrice, maxPrice)
     }
 
     private func formatDateForChart(_ dateString: String) -> String {
