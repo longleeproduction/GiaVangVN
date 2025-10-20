@@ -8,10 +8,12 @@
 
 /* Begin PBXBuildFile section */
 		5D4DA3472E9F9E7100426F54 /* SwifterSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 5D4DA3462E9F9E7100426F54 /* SwifterSwift */; };
+		5DB0B1E42EA5F68E003962E0 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 5DB0B1E32EA5F68E003962E0 /* README.md */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		5D4DA30C2E9F95A300426F54 /* GiaVangVN.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GiaVangVN.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		5DB0B1E32EA5F68E003962E0 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -52,6 +54,7 @@
 			children = (
 				5D4DA30E2E9F95A300426F54 /* GiaVangVN */,
 				5D4DA30D2E9F95A300426F54 /* Products */,
+				5DB0B1E32EA5F68E003962E0 /* README.md */,
 			);
 			sourceTree = "<group>";
 		};
@@ -131,6 +134,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5DB0B1E42EA5F68E003962E0 /* README.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
