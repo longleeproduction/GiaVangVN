@@ -1,51 +1,29 @@
 //
-//  DashboardGoldView.swift
+//  CurrencyChartView.swift
 //  GiaVangVN
 //
-//  Created by ORL on 16/10/25.
+//  Created by ORL on 20/10/25.
 //
 
 import SwiftUI
 import Charts
 
-struct DashboardGoldView: View {
+struct CurrencyChartView: View {
 
-    @EnvironmentObject private var viewModel: DashBoardViewModel
+    var data: CurrencyListData
     @State private var selectedDate: String?
 
     var body: some View {
-        VStack {
-            if viewModel.isLoadingListSJC {
-                ProgressView()
-
-            } else {
-                if let data = viewModel.listSJC {
-                    buildChart(data: data)
-                    HStack {
-                        Text(viewModel.listSJC?.subTitle ?? "")
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                        
-                        Button {
-                            viewModel.getListPriceSJC()
-                        } label: {
-                            Label("Refresh", systemImage: "arrow.2.circlepath.circle")
-                        }
-                    }
-                }
-            }
-        }.frame(maxWidth: .infinity)
-            .frame(height: 400)
-    }
-
-
-    @ViewBuilder
-    func buildChart(data: GoldListData) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             // Header
             VStack(alignment: .leading, spacing: 4) {
                 Text(data.title)
                     .font(.headline)
                     .foregroundColor(.primary)
+
+                Text(data.subTitle)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
             }
             .padding(.horizontal)
 
@@ -53,15 +31,7 @@ struct DashboardGoldView: View {
             let chartData = prepareChartData(from: data.list.reversed())
 
             if chartData.isEmpty {
-                VStack(spacing: 8) {
-                    Image(systemName: "chart.line.uptrend.xyaxis")
-                        .font(.largeTitle)
-                        .foregroundColor(.secondary)
-                    Text("Không có dữ liệu biểu đồ")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                buildEmptyState()
             } else {
                 let (minPrice, maxPrice) = calculatePriceRange(from: chartData)
 
@@ -77,7 +47,7 @@ struct DashboardGoldView: View {
                         .symbol {
                             Circle()
                                 .fill(.green)
-                                .frame(width: 6, height: 6)
+                                .frame(width: 4, height: 4)
                         }
                         .lineStyle(StrokeStyle(lineWidth: 2))
                         .interpolationMethod(.catmullRom)
@@ -94,14 +64,14 @@ struct DashboardGoldView: View {
                         .symbol {
                             Circle()
                                 .fill(.red)
-                                .frame(width: 6, height: 6)
+                                .frame(width: 4, height: 4)
                         }
                         .lineStyle(StrokeStyle(lineWidth: 2))
                         .interpolationMethod(.catmullRom)
                     }
                 }
                 .chartXAxis {
-                    AxisMarks(values: .automatic) { value in
+                    AxisMarks(values: .stride(by: .day, count: 10)) { value in
                         if let dateString = value.as(String.self) {
                             AxisValueLabel {
                                 Text(dateString)
@@ -150,7 +120,7 @@ struct DashboardGoldView: View {
 
                             let dateX = proxy.position(forX: selectedDate) ?? 0
 
-                            PricePopupView(dataPoint: dataPoint)
+                            CurrencyPricePopupView(dataPoint: dataPoint)
                                 .position(x: dateX, y: geometry.size.height / 4)
                         }
                     }
@@ -176,17 +146,31 @@ struct DashboardGoldView: View {
                         }
                     }
                 }
-                .frame(maxHeight: .infinity)
+                .frame(height: 300)
                 .padding(.horizontal)
                 .padding(.bottom, 8)
             }
         }
     }
 
+    @ViewBuilder
+    private func buildEmptyState() -> some View {
+        VStack(spacing: 8) {
+            Image(systemName: "chart.line.uptrend.xyaxis")
+                .font(.largeTitle)
+                .foregroundColor(.secondary)
+            Text("Không có dữ liệu biểu đồ")
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .frame(height: 300)
+    }
+
     // MARK: - Helper Methods
 
-    private func prepareChartData(from items: [GoldListItem]) -> [ChartDataPoint] {
-        var chartData: [ChartDataPoint] = []
+    private func prepareChartData(from items: [CurrencyListItem]) -> [CurrencyChartDataPoint] {
+        var chartData: [CurrencyChartDataPoint] = []
 
         for item in items {
             // Decrypt buy and sell prices
@@ -203,7 +187,7 @@ struct DashboardGoldView: View {
             // Format date for display
             let displayDate = formatDateForChart(item.dateUpdate)
 
-            let dataPoint = ChartDataPoint(
+            let dataPoint = CurrencyChartDataPoint(
                 id: item.id,
                 date: displayDate,
                 buyPrice: buyPrice,
@@ -214,11 +198,11 @@ struct DashboardGoldView: View {
             chartData.append(dataPoint)
         }
 
-        // Sort by date (oldest to newest)
+        // Already reversed, so this is oldest to newest
         return chartData
     }
 
-    private func calculatePriceRange(from chartData: [ChartDataPoint]) -> (Double, Double) {
+    private func calculatePriceRange(from chartData: [CurrencyChartDataPoint]) -> (Double, Double) {
         guard !chartData.isEmpty else { return (0, 100) }
 
         var allPrices: [Double] = []
@@ -232,9 +216,9 @@ struct DashboardGoldView: View {
             return (0, 100)
         }
 
-        // Add padding to make the chart more readable (5% on each side)
+        // Add padding to make lines occupy ~2/3 of chart height (25% padding on each side)
         let range = maxValue - minValue
-        let padding = range * 0.05
+        let padding = range * 0.25
         let minPrice = max(0, minValue - padding)
         let maxPrice = maxValue + padding
 
@@ -271,9 +255,9 @@ struct DashboardGoldView: View {
     }
 }
 
-// MARK: - Chart Data Model
+// MARK: - Currency Chart Data Model
 
-struct ChartDataPoint: Identifiable {
+struct CurrencyChartDataPoint: Identifiable {
     let id: String
     let date: String
     let buyPrice: Double
@@ -281,10 +265,10 @@ struct ChartDataPoint: Identifiable {
     let dateUpdate: String
 }
 
-// MARK: - Price Popup View
+// MARK: - Currency Price Popup View
 
-struct PricePopupView: View {
-    let dataPoint: ChartDataPoint
+struct CurrencyPricePopupView: View {
+    let dataPoint: CurrencyChartDataPoint
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -345,8 +329,4 @@ struct PricePopupView: View {
 
         return formatter.string(from: NSNumber(value: price)) ?? "\(Int(price))"
     }
-}
-
-#Preview {
-    DashboardGoldView()
 }

@@ -2,7 +2,7 @@
 //  NewsView.swift
 //  GiaVangVN
 //
-//  Created by L7 Mobile on 16/10/25.
+//  Created by ORL on 16/10/25.
 //
 
 import SwiftUI
