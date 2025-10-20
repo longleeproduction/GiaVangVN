@@ -16,10 +16,10 @@ struct DashBoardView: View {
             ScrollView {
                 VStack(spacing: 40) {
                     // Vàng miếng SJC
-                    
+                    DashboardGoldView()
+
                     DashboardGoldListView()
                     
-                    DashboardGoldView()
                     // Vàng nhẫn 9999
                     //
                     

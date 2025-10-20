@@ -20,11 +20,15 @@ struct DashboardGoldView: View {
             } else {
                 if let data = viewModel.listSJC {
                     buildChart(data: data)
-                } else {
-                    Button {
-                        viewModel.getListPriceSJC()
-                    } label: {
-                        Label("Refresh", systemImage: "arrow.2.circlepath.circle")
+                    HStack {
+                        Text(viewModel.listSJC?.subTitle ?? "")
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        
+                        Button {
+                            viewModel.getListPriceSJC()
+                        } label: {
+                            Label("Refresh", systemImage: "arrow.2.circlepath.circle")
+                        }
                     }
                 }
             }
@@ -48,8 +52,8 @@ struct DashboardGoldView: View {
             }
             .padding(.horizontal)
 
-            // Chart
-            let chartData = prepareChartData(from: data.list)
+            // Chart - need revert to larger
+            let chartData = prepareChartData(from: data.list.reversed())
 
             if chartData.isEmpty {
                 VStack(spacing: 8) {
@@ -161,7 +165,7 @@ struct DashboardGoldView: View {
         }
 
         // Sort by date (oldest to newest)
-        return chartData.sorted { $0.dateUpdate < $1.dateUpdate }
+        return chartData
     }
 
     private func formatDateForChart(_ dateString: String) -> String {
