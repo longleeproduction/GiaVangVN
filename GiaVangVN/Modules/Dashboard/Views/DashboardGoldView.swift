@@ -11,6 +11,7 @@ import Charts
 struct DashboardGoldView: View {
 
     @EnvironmentObject private var viewModel: DashBoardViewModel
+    @State private var selectedDate: String?
 
     var body: some View {
         VStack {
@@ -122,6 +123,38 @@ struct DashboardGoldView: View {
                     }
                 }
                 .chartYScale(domain: minPrice...maxPrice)
+                .chartOverlay { proxy in
+                    GeometryReader { geometry in
+                        Rectangle()
+                            .fill(.clear)
+                            .contentShape(Rectangle())
+                            .gesture(
+                                DragGesture(minimumDistance: 0)
+                                    .onChanged { value in
+                                        let location = value.location
+                                        if let date: String = proxy.value(atX: location.x) {
+                                            selectedDate = date
+                                        }
+                                    }
+                                    .onEnded { _ in
+                                        // Keep selection visible for a moment
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                            selectedDate = nil
+                                        }
+                                    }
+                            )
+
+                        // Show price popup if date is selected
+                        if let selectedDate = selectedDate,
+                           let dataPoint = chartData.first(where: { $0.date == selectedDate }) {
+
+                            let dateX = proxy.position(forX: selectedDate) ?? 0
+
+                            PricePopupView(dataPoint: dataPoint)
+                                .position(x: dateX, y: geometry.size.height / 4)
+                        }
+                    }
+                }
                 .chartLegend(position: .bottom, spacing: 8) {
                     HStack(spacing: 20) {
                         HStack(spacing: 4) {
@@ -246,6 +279,72 @@ struct ChartDataPoint: Identifiable {
     let buyPrice: Double
     let sellPrice: Double
     let dateUpdate: String
+}
+
+// MARK: - Price Popup View
+
+struct PricePopupView: View {
+    let dataPoint: ChartDataPoint
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            // Date header
+            Text(dataPoint.dateUpdate)
+                .font(.caption2)
+                .foregroundColor(.secondary)
+
+            // Buy price
+            HStack(spacing: 6) {
+                Circle()
+                    .fill(.green)
+                    .frame(width: 6, height: 6)
+
+                Text("Mua:")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+
+                Text(formatFullPrice(dataPoint.buyPrice))
+                    .font(.caption)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.primary)
+            }
+
+            // Sell price
+            HStack(spacing: 6) {
+                Circle()
+                    .fill(.red)
+                    .frame(width: 6, height: 6)
+
+                Text("Bán:")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+
+                Text(formatFullPrice(dataPoint.sellPrice))
+                    .font(.caption)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.primary)
+            }
+        }
+        .padding(12)
+        .background(
+            RoundedRectangle(cornerRadius: 8)
+                .fill(Color(.systemBackground))
+                .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: 2)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(Color(.separator), lineWidth: 1)
+        )
+    }
+
+    private func formatFullPrice(_ price: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.maximumFractionDigits = 0
+        formatter.groupingSeparator = ","
+
+        return formatter.string(from: NSNumber(value: price)) ?? "\(Int(price))"
+    }
 }
 
 #Preview {
