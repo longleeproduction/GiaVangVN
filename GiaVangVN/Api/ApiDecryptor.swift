@@ -144,5 +144,13 @@ class ApiDecryptor {
             return nil
         }
     }
+    
+    static func decrypt(_ cipherText: String) -> String {
+        do {
+            return try decryptValue(cipherText)
+        } catch {
+            return cipherText
+        }
+    }
 
 }

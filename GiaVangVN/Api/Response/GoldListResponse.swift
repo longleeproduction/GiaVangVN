@@ -25,7 +25,7 @@ struct GoldListData: Codable {
 }
 
 struct GoldListItem: Codable, Identifiable {
-    let id: String
+    let id: String = UUID().uuidString
     let dateUpdate: String
     let buyDisplay: String
     let buy: String

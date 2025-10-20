@@ -21,7 +21,7 @@ struct DashboardCurrencyView: View {
                     Text(model.title)
                         .font(.title)
                     
-                    Text(ApiDecryptor.decrypt(model.dateUpdate) ?? model.dateUpdate)
+                    Text(ApiDecryptor.decrypt(model.dateUpdate))
                         .font(.callout)
                     
                     HStack {
@@ -32,10 +32,10 @@ struct DashboardCurrencyView: View {
                         }.frame(maxWidth: .infinity, alignment: .leading)
                         
                         VStack {
-                            Text(ApiDecryptor.decrypt(model.sellDisplay) ?? "")
+                            Text(ApiDecryptor.decrypt(model.sellDisplay))
                                 .font(.title2)
-                            Text(ApiDecryptor.decrypt(model.sellDelta) ?? "")
-                            Text(ApiDecryptor.decrypt(model.sellPercent) ?? "")
+                            Text(ApiDecryptor.decrypt(model.sellDelta))
+                            Text(ApiDecryptor.decrypt(model.sellPercent))
                         }
                     }
                     
@@ -47,10 +47,10 @@ struct DashboardCurrencyView: View {
                         }.frame(maxWidth: .infinity, alignment: .leading)
                         
                         VStack {
-                            Text(ApiDecryptor.decrypt(model.transferDisplay) ?? "")
+                            Text(ApiDecryptor.decrypt(model.transferDisplay))
                                 .font(.title2)
-                            Text(ApiDecryptor.decrypt(model.transferDelta) ?? "")
-                            Text(ApiDecryptor.decrypt(model.transferPercent) ?? "")
+                            Text(ApiDecryptor.decrypt(model.transferDelta))
+                            Text(ApiDecryptor.decrypt(model.transferPercent))
                         }
                     }
                     
@@ -62,10 +62,10 @@ struct DashboardCurrencyView: View {
                         }.frame(maxWidth: .infinity, alignment: .leading)
                         
                         VStack {
-                            Text(ApiDecryptor.decrypt(model.buyDisplay) ?? "")
+                            Text(ApiDecryptor.decrypt(model.buyDisplay))
                                 .font(.title2)
-                            Text(ApiDecryptor.decrypt(model.buyDelta) ?? "")
-                            Text(ApiDecryptor.decrypt(model.buyPercent) ?? "")
+                            Text(ApiDecryptor.decrypt(model.buyDelta))
+                            Text(ApiDecryptor.decrypt(model.buyPercent))
                         }
                     }
                     

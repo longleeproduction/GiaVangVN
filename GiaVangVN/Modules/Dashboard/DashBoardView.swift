@@ -17,6 +17,8 @@ struct DashBoardView: View {
                 VStack(spacing: 40) {
                     // Vàng miếng SJC
                     
+                    DashboardGoldListView()
+                    
                     DashboardGoldView()
                     // Vàng nhẫn 9999
                     //

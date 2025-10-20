@@ -140,10 +140,9 @@ struct DashboardGoldView: View {
 
         for item in items {
             // Decrypt buy and sell prices
-            guard let buyPriceString = ApiDecryptor.decrypt(item.buy),
-                  let buyPrice = Double(buyPriceString),
-                  let sellPriceString = ApiDecryptor.decrypt(item.sell),
-                  let sellPrice = Double(sellPriceString) else {
+            let buyPriceString = ApiDecryptor.decrypt(item.buy)
+            let sellPriceString = ApiDecryptor.decrypt(item.sell)
+            guard let buyPrice = Double(buyPriceString), let sellPrice = Double(sellPriceString) else {
                 continue
             }
 
