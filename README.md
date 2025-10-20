@@ -129,6 +129,18 @@ https://giavang.pro/services/v1/gold
 ```
 Branch support: `sjc`, `doji`, `btmc`, `mihong`, `btmh`, `phuquy`, `ngoctham`, `pnj`,
 
+Xem chi tiết biểu đồ vàng:
+```
+{
+    "lang": "vi",
+    "product": "Vàng SJC 1L, 10L, 1KG", // Tên sản phẩm từ api daily
+    "range": 7,
+    "branch": "sjc",
+    "city": "Hải Phòng" // Lấy theo api daily trả về city
+}
+```
+
+
 - Biểu đồ giá:
 ```
 {
@@ -180,6 +192,17 @@ https://giavang.pro/services/v1/currency
 }
 ```
 **- Branch support:** `vcb`, `bidv`, 
+
+- Chi tiết bảng tỷ giá của 1 đồng tiên tại 1 bank(api list)
+```
+{
+    "branch": "vcb",
+    "lang": "vi",
+    "code": "AUD", // lấy thông tin từ code trong danh sách tỷ giá
+    "range": 7
+}
+```
+**- range support:** `7`, `30`, `60`, `180`, `365`, 
 
 **Biểu đồ Forex**
 ```
