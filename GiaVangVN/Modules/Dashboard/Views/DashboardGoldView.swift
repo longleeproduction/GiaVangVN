@@ -101,13 +101,16 @@ struct DashboardGoldView: View {
                     }
                 }
                 .chartXAxis {
-                    AxisMarks(values: .automatic) { value in
+                    AxisMarks(preset: .aligned, values: .stride(by: .day, count: max(1, chartData.count / 3))) { value in
                         if let dateString = value.as(String.self) {
                             AxisValueLabel {
                                 Text(dateString)
-                                    .font(.caption2)
+                                    .font(.system(size: 10))
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.8)
                             }
                             AxisTick()
+                            AxisGridLine()
                         }
                     }
                 }

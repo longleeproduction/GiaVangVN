@@ -1,5 +1,5 @@
 //
-//  CurrencyChartView.swift
+//  GoldChartView.swift
 //  GiaVangVN
 //
 //  Created by ORL on 20/10/25.
@@ -8,9 +8,9 @@
 import SwiftUI
 import Charts
 
-struct CurrencyChartView: View {
+struct GoldChartView: View {
 
-    var data: CurrencyListData
+    var data: GoldListData
     @State private var selectedDate: String?
 
     var body: some View {
@@ -123,7 +123,7 @@ struct CurrencyChartView: View {
 
                             let dateX = proxy.position(forX: selectedDate) ?? 0
 
-                            CurrencyPricePopupView(dataPoint: dataPoint)
+                            GoldPricePopupView(dataPoint: dataPoint)
                                 .position(x: dateX, y: geometry.size.height / 4)
                         }
                     }
@@ -172,8 +172,8 @@ struct CurrencyChartView: View {
 
     // MARK: - Helper Methods
 
-    private func prepareChartData(from items: [CurrencyListItem]) -> [CurrencyChartDataPoint] {
-        var chartData: [CurrencyChartDataPoint] = []
+    private func prepareChartData(from items: [GoldListItem]) -> [GoldChartDataPoint] {
+        var chartData: [GoldChartDataPoint] = []
 
         for item in items {
             // Decrypt buy and sell prices
@@ -190,7 +190,7 @@ struct CurrencyChartView: View {
             // Format date for display
             let displayDate = formatDateForChart(item.dateUpdate)
 
-            let dataPoint = CurrencyChartDataPoint(
+            let dataPoint = GoldChartDataPoint(
                 id: item.id,
                 date: displayDate,
                 buyPrice: buyPrice,
@@ -205,7 +205,7 @@ struct CurrencyChartView: View {
         return chartData
     }
 
-    private func calculatePriceRange(from chartData: [CurrencyChartDataPoint]) -> (Double, Double) {
+    private func calculatePriceRange(from chartData: [GoldChartDataPoint]) -> (Double, Double) {
         guard !chartData.isEmpty else { return (0, 100) }
 
         var allPrices: [Double] = []
@@ -258,9 +258,9 @@ struct CurrencyChartView: View {
     }
 }
 
-// MARK: - Currency Chart Data Model
+// MARK: - Gold Chart Data Model
 
-struct CurrencyChartDataPoint: Identifiable {
+struct GoldChartDataPoint: Identifiable {
     let id: String
     let date: String
     let buyPrice: Double
@@ -268,10 +268,10 @@ struct CurrencyChartDataPoint: Identifiable {
     let dateUpdate: String
 }
 
-// MARK: - Currency Price Popup View
+// MARK: - Gold Price Popup View
 
-struct CurrencyPricePopupView: View {
-    let dataPoint: CurrencyChartDataPoint
+struct GoldPricePopupView: View {
+    let dataPoint: GoldChartDataPoint
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
