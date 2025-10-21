@@ -483,6 +483,7 @@
 				"DEVELOPMENT_TEAM[sdk=watchos*]" = XL8Q4B9F55;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "GiaVang-Watch-App-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = GiaVang;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.orientpro.goldprice;
@@ -520,6 +521,7 @@
 				"DEVELOPMENT_TEAM[sdk=watchos*]" = XL8Q4B9F55;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "GiaVang-Watch-App-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = GiaVang;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.orientpro.goldprice;
