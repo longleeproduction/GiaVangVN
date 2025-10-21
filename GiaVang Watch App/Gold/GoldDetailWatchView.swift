@@ -10,7 +10,7 @@ import Charts
 
 struct GoldDetailWatchView: View {
 
-    var gold: GoldDailyItem
+    var goldProductName: String
     var branch: GoldBranch
     var city: String
 
@@ -22,7 +22,7 @@ struct GoldDetailWatchView: View {
                 // Current Info Card
                 VStack(spacing: 8) {
                     HStack {
-                        Text(gold.name)
+                        Text(goldProductName)
                             .font(.title3)
                             .fontWeight(.bold)
                             .foregroundColor(.orange)
@@ -58,7 +58,7 @@ struct GoldDetailWatchView: View {
                                 ForEach(ListRange.allCases, id: \.self) { range in
                                     Button {
                                         viewModel.range = range
-                                        viewModel.getGoldDetail(product: gold.name, branch: branch, city: city)
+                                        viewModel.getGoldDetail(product: goldProductName, branch: branch, city: city)
                                     } label: {
                                         Text(rangeLabel(range))
                                             .font(.caption2)
@@ -85,7 +85,7 @@ struct GoldDetailWatchView: View {
                     buildHistoricalData(data: listData)
                 } else {
                     Button {
-                        viewModel.getGoldDetail(product: gold.name, branch: branch, city: city)
+                        viewModel.getGoldDetail(product: goldProductName, branch: branch, city: city)
                     } label: {
                         Label("Không có dữ liệu. Tải lại", systemImage: "arrow.circlepath")
                     }
@@ -95,7 +95,7 @@ struct GoldDetailWatchView: View {
         }
         .navigationBarTitleDisplayMode(.inline)
         .task {
-            viewModel.getGoldDetail(product: gold.name, branch: branch, city: city)
+            viewModel.getGoldDetail(product: goldProductName, branch: branch, city: city)
         }
     }
 

@@ -12,59 +12,78 @@ struct DashboardWatchView: View {
     @StateObject private var viewModel = DashBoardViewModel()
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 12) {
-                // Header
-                VStack(spacing: 4) {
-                    Image(systemName: "chart.line.uptrend.xyaxis")
-                        .font(.system(size: 40))
-                        .foregroundColor(.blue)
-
-                    Text("Trang chủ")
-                        .font(.headline)
-                        .foregroundColor(.primary)
-                }
-                .padding(.top, 8)
-
-                Divider()
-
-                // Box Price Gold SJC
-                GoldPriceBox(
-                    title: "Vàng miếng SJC",
-                    data: viewModel.priceSJC,
-                    isLoading: viewModel.isLoadingPriceSJC,
-                    color: .yellow
-                )
-
-                // Box Price Gold 9999
-                GoldPriceBox(
-                    title: "Vàng nhẫn 9999",
-                    data: viewModel.price9999,
-                    isLoading: viewModel.isLoadingPrice9999,
-                    color: .orange
-                )
-
-                // Box price ag Phu Quy 999
-                GoldPriceBox(
-                    title: "Bạc thỏi Phú Quý 999",
-                    data: viewModel.priceAg999,
-                    isLoading: viewModel.isLoadingPriceAg999,
-                    color: .gray
-                )
-
-                // Currency USD of VCB
-                CurrencyPriceBox(
-                    title: "Tỷ giá USD",
-                    data: viewModel.currency,
-                    isLoading: viewModel.isLoadingCurrency,
-                    color: .green,
-                    onRefresh: {
-                        refreshAllData()
+        NavigationStack {
+            ScrollView {
+                VStack(spacing: 12) {
+                    // Header
+                    VStack(spacing: 4) {
+                        Image(systemName: "chart.line.uptrend.xyaxis")
+                            .font(.system(size: 40))
+                            .foregroundColor(.blue)
+                        
+                        Text("Trang chủ")
+                            .font(.headline)
+                            .foregroundColor(.primary)
                     }
-                )
+                    .padding(.top, 8)
+                    
+                    Divider()
+                    
+                    // Box Price Gold SJC
+                    NavigationLink {
+                        GoldDetailWatchView(goldProductName: "Vàng miếng SJC", branch: .sjc, city: "Hồ Chí Minh")
+                    } label: {
+                        GoldPriceBox(
+                            title: "Vàng miếng SJC",
+                            data: viewModel.priceSJC,
+                            isLoading: viewModel.isLoadingPriceSJC,
+                            color: .yellow
+                        )
+                    }.buttonStyle(.plain)
+                    
+                    // Box Price Gold 9999
+                    NavigationLink {
+                        GoldDetailWatchView(goldProductName: "Vàng nhẫn 9999", branch: .sjc, city: "Hồ Chí Minh")
+                    } label: {
+                        GoldPriceBox(
+                            title: "Vàng nhẫn 9999",
+                            data: viewModel.price9999,
+                            isLoading: viewModel.isLoadingPrice9999,
+                            color: .orange
+                        )
+                    }.buttonStyle(.plain)
+                    
+                    // Box price ag Phu Quy 999
+                    NavigationLink {
+                        GoldDetailWatchView(goldProductName: "Bạc thỏi Phú Quý 999", branch: .phuquy, city: "Hà Nội")
+                    } label: {
+                        GoldPriceBox(
+                            title: "Bạc thỏi Phú Quý 999",
+                            data: viewModel.priceAg999,
+                            isLoading: viewModel.isLoadingPriceAg999,
+                            color: .gray
+                        )
+                    }.buttonStyle(.plain)
+                    
+                    // Currency USD of VCB
+                    NavigationLink {
+                        CurrencyDetailWatchView(item: CurrencyDailyItem(name: "Tỷ giá USD", code: "USD", buy: "", buyDisplay: "", buyLast: "", buyLastDisplay: "", buyDelta: "", buyPercent: "", sell: "", sellDisplay: "", sellLast: "", sellLastDisplay: "", sellDelta: "", sellPercent: "", transfer: "", transferDisplay: "", transferLast: "", transferLastDisplay: "", transferDelta: "", transferPercent: "", dateUpdate: "", lastUpdate: ""), currencyType: .vcb)
+                    } label: {
+                        CurrencyPriceBox(
+                            title: "Tỷ giá USD",
+                            data: viewModel.currency,
+                            isLoading: viewModel.isLoadingCurrency,
+                            color: .green,
+                            onRefresh: {
+                                refreshAllData()
+                            }
+                        )
+                    }.buttonStyle(.plain)
+                    
+                }
+                .padding(.horizontal, 8)
+                .padding(.bottom, 8)
             }
-            .padding(.horizontal, 8)
-            .padding(.bottom, 8)
         }
     }
 

@@ -113,7 +113,7 @@ struct GoldWatchView: View {
                     // Gold Items
                     ForEach(city.list) { item in
                         NavigationLink {
-                            GoldDetailWatchView(gold: item, branch: viewModel.currentBranch, city: city.city)
+                            GoldDetailWatchView(goldProductName: item.name, branch: viewModel.currentBranch, city: city.city)
                         } label: {
                             GoldPriceCard(item: item)
                         }.buttonStyle(.plain)
