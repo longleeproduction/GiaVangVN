@@ -208,3 +208,7 @@ https://giavang.pro/services/v1/currency
 ```
 https://giavang.pro/chart.html?product=RlhfSURDOlVTRFZORA==&theme=light
 ```
+
+
+# Watch App
+Sử dụng chung Api folder code và sử dụng chung view model của các dashboard, gold, currency

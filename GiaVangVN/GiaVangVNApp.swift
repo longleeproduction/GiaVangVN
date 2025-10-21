@@ -10,6 +10,9 @@ import CoreData
 
 @main
 struct GiaVangVNApp: App {
+
+    @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
+
     let persistenceController = PersistenceController.shared
 
     var body: some Scene {

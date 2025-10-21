@@ -9,11 +9,37 @@
 /* Begin PBXBuildFile section */
 		5D4DA3472E9F9E7100426F54 /* SwifterSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 5D4DA3462E9F9E7100426F54 /* SwifterSwift */; };
 		5DB0B1E42EA5F68E003962E0 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 5DB0B1E32EA5F68E003962E0 /* README.md */; };
+		5DB0B1FB2EA62B34003962E0 /* GiaVang Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 5DB0B1F12EA62B33003962E0 /* GiaVang Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		5DB0B1F92EA62B34003962E0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 5D4DA3042E9F95A300426F54 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5DB0B1F02EA62B33003962E0;
+			remoteInfo = "GiaVang Watch App";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		5DB0B1FF2EA62B34003962E0 /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				5DB0B1FB2EA62B34003962E0 /* GiaVang Watch App.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		5D4DA30C2E9F95A300426F54 /* GiaVangVN.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GiaVangVN.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5DB0B1E32EA5F68E003962E0 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		5DB0B1F12EA62B33003962E0 /* GiaVang Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "GiaVang Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -24,6 +50,40 @@
 			);
 			target = 5D4DA30B2E9F95A300426F54 /* GiaVangVN */;
 		};
+		5DB0B2052EA62C49003962E0 /* Exceptions for "GiaVangVN" folder in "GiaVang Watch App" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Api/Api.swift,
+				Api/ApiDecryptor.swift,
+				Api/CurrencyService.swift,
+				Api/DashboardService.swift,
+				Api/GoldService.swift,
+				Api/Request/CurrencyDailyRequest.swift,
+				Api/Request/CurrencyListRequest.swift,
+				Api/Request/CurrencyPriceRequest.swift,
+				Api/Request/CurrencyRequest.swift,
+				Api/Request/DashboardRequest.swift,
+				Api/Request/GoldDailyRequest.swift,
+				Api/Request/GoldListRequest.swift,
+				Api/Request/GoldPriceRequest.swift,
+				Api/Request/NewsRequest.swift,
+				Api/Response/CurrencyDailyResponse.swift,
+				Api/Response/CurrencyListResponse.swift,
+				Api/Response/CurrencyPriceResponse.swift,
+				Api/Response/CurrencyResponse.swift,
+				Api/Response/DashboardResponse.swift,
+				Api/Response/GoldChartResponse.swift,
+				Api/Response/GoldDailyResponse.swift,
+				Api/Response/GoldListResponse.swift,
+				Api/Response/GoldPriceResponse.swift,
+				Api/Response/GoldResponse.swift,
+				Api/Response/NewsResponse.swift,
+				Modules/Currency/CurrencyViewModel.swift,
+				Modules/Dashboard/DashBoardViewModel.swift,
+				Modules/Gold/GoldViewModel.swift,
+			);
+			target = 5DB0B1F02EA62B33003962E0 /* GiaVang Watch App */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -31,8 +91,14 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				5D4DA3212E9F96F500426F54 /* Exceptions for "GiaVangVN" folder in "GiaVangVN" target */,
+				5DB0B2052EA62C49003962E0 /* Exceptions for "GiaVangVN" folder in "GiaVang Watch App" target */,
 			);
 			path = GiaVangVN;
+			sourceTree = "<group>";
+		};
+		5DB0B1F22EA62B33003962E0 /* GiaVang Watch App */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "GiaVang Watch App";
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -46,6 +112,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		5DB0B1EE2EA62B33003962E0 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -53,6 +126,7 @@
 			isa = PBXGroup;
 			children = (
 				5D4DA30E2E9F95A300426F54 /* GiaVangVN */,
+				5DB0B1F22EA62B33003962E0 /* GiaVang Watch App */,
 				5D4DA30D2E9F95A300426F54 /* Products */,
 				5DB0B1E32EA5F68E003962E0 /* README.md */,
 			);
@@ -62,6 +136,7 @@
 			isa = PBXGroup;
 			children = (
 				5D4DA30C2E9F95A300426F54 /* GiaVangVN.app */,
+				5DB0B1F12EA62B33003962E0 /* GiaVang Watch App.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -76,10 +151,12 @@
 				5D4DA3082E9F95A300426F54 /* Sources */,
 				5D4DA3092E9F95A300426F54 /* Frameworks */,
 				5D4DA30A2E9F95A300426F54 /* Resources */,
+				5DB0B1FF2EA62B34003962E0 /* Embed Watch Content */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				5DB0B1FA2EA62B34003962E0 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				5D4DA30E2E9F95A300426F54 /* GiaVangVN */,
@@ -90,6 +167,28 @@
 			);
 			productName = GiaVangVN;
 			productReference = 5D4DA30C2E9F95A300426F54 /* GiaVangVN.app */;
+			productType = "com.apple.product-type.application";
+		};
+		5DB0B1F02EA62B33003962E0 /* GiaVang Watch App */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5DB0B1FC2EA62B34003962E0 /* Build configuration list for PBXNativeTarget "GiaVang Watch App" */;
+			buildPhases = (
+				5DB0B1ED2EA62B33003962E0 /* Sources */,
+				5DB0B1EE2EA62B33003962E0 /* Frameworks */,
+				5DB0B1EF2EA62B33003962E0 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				5DB0B1F22EA62B33003962E0 /* GiaVang Watch App */,
+			);
+			name = "GiaVang Watch App";
+			packageProductDependencies = (
+			);
+			productName = "GiaVang Watch App";
+			productReference = 5DB0B1F12EA62B33003962E0 /* GiaVang Watch App.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -103,6 +202,9 @@
 				LastUpgradeCheck = 2600;
 				TargetAttributes = {
 					5D4DA30B2E9F95A300426F54 = {
+						CreatedOnToolsVersion = 26.0.1;
+					};
+					5DB0B1F02EA62B33003962E0 = {
 						CreatedOnToolsVersion = 26.0.1;
 					};
 				};
@@ -125,6 +227,7 @@
 			projectRoot = "";
 			targets = (
 				5D4DA30B2E9F95A300426F54 /* GiaVangVN */,
+				5DB0B1F02EA62B33003962E0 /* GiaVang Watch App */,
 			);
 		};
 /* End PBXProject section */
@@ -138,6 +241,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		5DB0B1EF2EA62B33003962E0 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -148,7 +258,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		5DB0B1ED2EA62B33003962E0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		5DB0B1FA2EA62B34003962E0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 5DB0B1F02EA62B33003962E0 /* GiaVang Watch App */;
+			targetProxy = 5DB0B1F92EA62B34003962E0 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		5D4DA31A2E9F95A500426F54 /* Debug */ = {
@@ -346,6 +471,80 @@
 			};
 			name = Release;
 		};
+		5DB0B1FD2EA62B34003962E0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=watchos*]" = XL8Q4B9F55;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = GiaVang;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.orientpro.goldprice;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.orientpro.goldprice.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=watchos*]" = "Wildcard - Dev";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 9.0;
+			};
+			name = Debug;
+		};
+		5DB0B1FE2EA62B34003962E0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=watchos*]" = XL8Q4B9F55;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = GiaVang;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.orientpro.goldprice;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.orientpro.goldprice.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=watchos*]" = "Wildcard - Dev";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 9.0;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -363,6 +562,15 @@
 			buildConfigurations = (
 				5D4DA31D2E9F95A500426F54 /* Debug */,
 				5D4DA31E2E9F95A500426F54 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		5DB0B1FC2EA62B34003962E0 /* Build configuration list for PBXNativeTarget "GiaVang Watch App" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5DB0B1FD2EA62B34003962E0 /* Debug */,
+				5DB0B1FE2EA62B34003962E0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
