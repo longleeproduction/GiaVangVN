@@ -8,60 +8,124 @@
 import SwiftUI
 
 struct GoldWatchView: View {
+
+    @StateObject private var viewModel = GoldWatchViewModel()
+
     var body: some View {
-        ScrollView {
-            VStack(spacing: 12) {
-                // Header
-                VStack(spacing: 4) {
-                    Image(systemName: "circle.hexagongrid.fill")
-                        .font(.system(size: 40))
-                        .foregroundColor(.yellow)
+        NavigationStack {
+            ScrollView {
+                VStack(spacing: 12) {
+                    // Header
+                    VStack(spacing: 4) {
+                        Image(systemName: "circle.hexagongrid.fill")
+                            .font(.system(size: 40))
+                            .foregroundColor(.yellow)
 
-                    Text("Giá Vàng")
-                        .font(.headline)
-                        .foregroundColor(.primary)
+                        Text("Giá Vàng")
+                            .font(.headline)
+                            .foregroundColor(.primary)
+                    }
+                    .padding(.top, 8)
+
+                    Divider()
+
+                    // Branch Selector
+                    VStack(spacing: 8) {
+                        Text("Chi nhánh")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 8) {
+                                ForEach(GoldBranch.allCases, id: \.self) { branch in
+                                    Button {
+                                        viewModel.currentBranch = branch
+                                        viewModel.getDailyGold(branch: branch)
+                                    } label: {
+                                        Text(branch.title)
+                                            .font(.caption2)
+                                            .fontWeight(viewModel.currentBranch == branch ? .bold : .regular)
+                                            .foregroundColor(viewModel.currentBranch == branch ? .white : .primary)
+                                            .padding(.horizontal, 12)
+                                            .padding(.vertical, 6)
+                                            .background(
+                                                viewModel.currentBranch == branch
+                                                ? Color.orange
+                                                : Color.gray.opacity(0.2)
+                                            )
+                                            .cornerRadius(12)
+                                    }
+                                    .buttonStyle(.plain)
+                                }
+                            }
+                        }
+                    }
+                    .padding(.horizontal, 8)
+
+                    Divider()
+
+                    // Gold Data
+                    if let goldData = viewModel.gold {
+                        buildGoldSection(data: goldData)
+                    } else {
+                        ProgressView()
+                            .padding()
+                    }
                 }
-                .padding(.top, 8)
-
-                Divider()
-
-                // Gold Prices
-                VStack(spacing: 8) {
-                    GoldPriceCard(
-                        name: "Vàng SJC",
-                        buyPrice: "94.50",
-                        sellPrice: "95.00",
-                        change: "+0.5%"
-                    )
-
-                    GoldPriceCard(
-                        name: "Vàng 24K",
-                        buyPrice: "85.20",
-                        sellPrice: "85.80",
-                        change: "+0.3%"
-                    )
-
-                    GoldPriceCard(
-                        name: "Vàng 18K",
-                        buyPrice: "63.90",
-                        sellPrice: "64.40",
-                        change: "-0.2%"
-                    )
-                }
-                .padding(.horizontal, 8)
+                .padding(.bottom, 8)
             }
-            .padding(.bottom, 8)
+            .onAppear {
+                viewModel.getDailyGold(branch: viewModel.currentBranch)
+            }
         }
+    }
+
+    @ViewBuilder
+    private func buildGoldSection(data: GoldDailyData) -> some View {
+        VStack(spacing: 8) {
+            // Header with last update
+            HStack {
+                Text(viewModel.currentBranch.title)
+                    .font(.caption)
+                    .fontWeight(.bold)
+                    .foregroundColor(.orange)
+
+                Spacer()
+
+                Text(data.lastUpdate)
+                    .font(.system(size: 8))
+                    .foregroundColor(.secondary)
+            }
+            .padding(.horizontal, 8)
+
+            // Cities and Gold Items
+            ForEach(data.cities) { city in
+                VStack(spacing: 6) {
+                    // City Header
+                    Text(city.city)
+                        .font(.caption2)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.secondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal, 8)
+
+                    // Gold Items
+                    ForEach(city.list) { item in
+                        GoldPriceCard(item: item)
+                    }
+                }
+            }
+        }
+        .padding(.horizontal, 8)
     }
 }
 
 struct GoldPriceCard: View {
-    let name: String
-    let buyPrice: String
-    let sellPrice: String
-    let change: String
+    let item: GoldDailyItem
 
     var changeColor: Color {
+        let change = ApiDecryptor.decrypt(item.buyPercent)
         if change.hasPrefix("+") {
             return .green
         } else if change.hasPrefix("-") {
@@ -74,16 +138,24 @@ struct GoldPriceCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack {
-                Text(name)
+                Text(item.name)
                     .font(.caption)
                     .fontWeight(.semibold)
                     .foregroundColor(.primary)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.8)
 
                 Spacer()
 
-                Text(change)
-                    .font(.caption2)
-                    .foregroundColor(changeColor)
+                HStack(spacing: 4) {
+                    Image(systemName: getDeltaIcon(ApiDecryptor.decrypt(item.buyDelta)))
+                        .font(.system(size: 10))
+                        .foregroundColor(changeColor)
+
+                    Text(ApiDecryptor.decrypt(item.buyPercent))
+                        .font(.system(size: 10))
+                        .foregroundColor(changeColor)
+                }
             }
 
             HStack(spacing: 8) {
@@ -92,10 +164,12 @@ struct GoldPriceCard: View {
                         .font(.system(size: 9))
                         .foregroundColor(.secondary)
 
-                    Text(buyPrice)
-                        .font(.caption)
+                    Text(ApiDecryptor.decrypt(item.buyDisplay))
+                        .font(.system(size: 10))
                         .fontWeight(.medium)
                         .foregroundColor(.green)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -107,10 +181,12 @@ struct GoldPriceCard: View {
                         .font(.system(size: 9))
                         .foregroundColor(.secondary)
 
-                    Text(sellPrice)
-                        .font(.caption)
+                    Text(ApiDecryptor.decrypt(item.sellDisplay))
+                        .font(.system(size: 10))
                         .fontWeight(.medium)
                         .foregroundColor(.red)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
@@ -118,6 +194,16 @@ struct GoldPriceCard: View {
         .padding(8)
         .background(Color.yellow.opacity(0.1))
         .cornerRadius(8)
+    }
+
+    private func getDeltaIcon(_ delta: String) -> String {
+        if delta.hasPrefix("-") {
+            return "arrow.down"
+        } else if delta.hasPrefix("+") {
+            return "arrow.up"
+        } else {
+            return "minus"
+        }
     }
 }
 

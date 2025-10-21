@@ -16,6 +16,20 @@ enum GoldBranch: String, CaseIterable {
     case btmh = "btmh"
     case phuquy = "phuquy"
     case ngoctham = "ngoctham"
+    
+    var title: String {
+        switch self {
+        case .sjc: return "SJC"
+        case .pnj: return "PNJ"
+        case .doji: return "DOJI"
+        case .btmc: return "Bảo Tín Minh Châu"
+        case .mihong: return "Mi Hồng"
+        case .btmh: return "Bảo Tín Mạnh Hải"
+        case .phuquy: return "Phú Qúy"
+        case .ngoctham: return "Ngọc Thẩm"
+            
+        }
+    }
 }
 
 class GoldViewModel: ObservableObject {
@@ -24,6 +38,9 @@ class GoldViewModel: ObservableObject {
     
     @Published var sjcChart: GoldListData?
     @Published var dojiChart: GoldListData?
+    
+    
+    @Published var currentBranch: GoldBranch = .sjc
     
     init() {
         getDailyGold(branch: .sjc)
