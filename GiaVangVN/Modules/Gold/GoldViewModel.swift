@@ -101,3 +101,40 @@ class GoldViewModel: ObservableObject {
         }
     }
 }
+
+
+
+class GoldDetailViewModel: ObservableObject {
+    
+    @Published var isLoading: Bool = false
+    @Published var goldData: GoldListData?
+    
+    @Published var range: ListRange = .Range7d
+    
+    func getGoldDetail(product: String, branch: GoldBranch, city: String) {
+        
+        isLoading = true
+        Task {
+            do {
+                let request = GoldListRequest(city: city, product: product, branch: branch.rawValue, range: self.range.rawValue)
+                let response = try await GoldService.shared.fetchGoldListByRange(request: request)
+                
+                if let data = response.data {
+                    await MainActor.run {
+                        goldData = data
+                    }
+                }
+                
+                await MainActor.run {
+                    isLoading = false
+                }
+            } catch {
+                debugPrint("ERROR ---> GoldViewModel")
+                debugPrint(error)
+                await MainActor.run {
+                    isLoading = false
+                }
+            }
+        }
+    }
+}
