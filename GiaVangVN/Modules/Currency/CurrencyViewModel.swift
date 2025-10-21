@@ -75,3 +75,40 @@ class CurrencyViewModel: ObservableObject {
         }
     }
 }
+
+class CurrencyDetailViewModel: ObservableObject {
+    
+    @Published var isLoading: Bool = false
+    @Published var currencyList: CurrencyListData?
+    
+    @Published var range: ListRange = .Range7d
+    
+    func getListCurrency(code: String, branch: String) {
+        isLoading = true
+        Task {
+            do {
+                let request = CurrencyListRequest(code: code, branch: branch, range: range.rawValue)
+                let response = try await CurrencyService.shared.fetchCurrencyList(request: request)
+
+                if let data = response.data {
+                    await MainActor.run {
+                        currencyList = data
+                    }
+                }
+                
+                await MainActor.run {
+                    isLoading = false
+                }
+            } catch {
+                debugPrint("ERROR ---> CurrencyViewModel")
+                debugPrint(error)
+                
+                await MainActor.run {
+                    isLoading = false
+                }
+            }
+        }
+    }
+    
+
+}

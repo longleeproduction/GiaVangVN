@@ -32,6 +32,14 @@ enum APIError: LocalizedError {
     }
 }
 
+enum ListRange: Int, CaseIterable {
+    case Range7d = 7
+    case Range30d = 30
+    case Range60d = 60
+    case Range180d = 180
+    case Range365d = 365
+}
+
 func createApiSession() -> URLSession {
     let configuration = URLSessionConfiguration.default
     configuration.httpAdditionalHeaders = [

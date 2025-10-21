@@ -9,7 +9,6 @@ import SwiftUI
 
 struct DashboardWatchView: View {
     
-    @StateObject private var viewModel = CurrencyViewModel()
     
     var body: some View {
         ScrollView {
