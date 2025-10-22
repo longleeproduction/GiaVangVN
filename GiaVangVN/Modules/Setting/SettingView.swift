@@ -17,6 +17,12 @@ struct SettingView: View {
                     Text("Calculator")
                         .padding()
                 }
+                NavigationLink {
+                    CurrencyCalculatorView()
+                } label: {
+                    Text("Currency Calculator")
+                        .padding()
+                }
 
             }.navigationTitle(Text("Settings"))
         }
