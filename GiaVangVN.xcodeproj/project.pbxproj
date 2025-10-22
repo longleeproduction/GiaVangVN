@@ -10,6 +10,7 @@
 		5D4DA3472E9F9E7100426F54 /* SwifterSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 5D4DA3462E9F9E7100426F54 /* SwifterSwift */; };
 		5DB0B1E42EA5F68E003962E0 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 5DB0B1E32EA5F68E003962E0 /* README.md */; };
 		5DB0B1FB2EA62B34003962E0 /* GiaVang Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 5DB0B1F12EA62B33003962E0 /* GiaVang Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		5DB0B31D2EA789DA003962E0 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = 5DB0B31C2EA789DA003962E0 /* GoogleMobileAds */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -108,6 +109,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5DB0B31D2EA789DA003962E0 /* GoogleMobileAds in Frameworks */,
 				5D4DA3472E9F9E7100426F54 /* SwifterSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -164,6 +166,7 @@
 			name = GiaVangVN;
 			packageProductDependencies = (
 				5D4DA3462E9F9E7100426F54 /* SwifterSwift */,
+				5DB0B31C2EA789DA003962E0 /* GoogleMobileAds */,
 			);
 			productName = GiaVangVN;
 			productReference = 5D4DA30C2E9F95A300426F54 /* GiaVangVN.app */;
@@ -220,6 +223,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				5D4DA3452E9F9E7100426F54 /* XCRemoteSwiftPackageReference "SwifterSwift" */,
+				5DB0B31B2EA789DA003962E0 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 5D4DA30D2E9F95A300426F54 /* Products */;
@@ -588,6 +592,14 @@
 				minimumVersion = 8.0.0;
 			};
 		};
+		5DB0B31B2EA789DA003962E0 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/googleads/swift-package-manager-google-mobile-ads";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.12.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -595,6 +607,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 5D4DA3452E9F9E7100426F54 /* XCRemoteSwiftPackageReference "SwifterSwift" */;
 			productName = SwifterSwift;
+		};
+		5DB0B31C2EA789DA003962E0 /* GoogleMobileAds */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5DB0B31B2EA789DA003962E0 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */;
+			productName = GoogleMobileAds;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

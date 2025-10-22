@@ -11,7 +11,13 @@ struct SettingView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                
+                NavigationLink {
+                    GoldCalculatorView()
+                } label: {
+                    Text("Calculator")
+                        .padding()
+                }
+
             }.navigationTitle(Text("Settings"))
         }
     }
