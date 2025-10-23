@@ -2,7 +2,7 @@
 //  CurrencyCalculatorViewModel.swift
 //  GiaVangVN
 //
-//  Created by L7 Mobile on 22/10/25.
+//  Created by ORL on 22/10/25.
 //
 
 import Foundation

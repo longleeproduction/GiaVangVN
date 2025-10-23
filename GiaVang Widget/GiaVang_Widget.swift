@@ -2,7 +2,7 @@
 //  GiaVang_Widget.swift
 //  GiaVang Widget
 //
-//  Created by L7 Mobile on 23/10/25.
+//  Created by ORL on 23/10/25.
 //
 
 import WidgetKit

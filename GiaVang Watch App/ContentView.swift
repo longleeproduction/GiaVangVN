@@ -2,7 +2,7 @@
 //  ContentView.swift
 //  GiaVang Watch App
 //
-//  Created by L7 Mobile on 20/10/25.
+//  Created by ORL on 20/10/25.
 //
 
 import SwiftUI

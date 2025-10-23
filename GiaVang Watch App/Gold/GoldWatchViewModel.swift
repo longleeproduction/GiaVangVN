@@ -2,7 +2,7 @@
 //  GoldWatchViewModel.swift
 //  GiaVangVN
 //
-//  Created by L7 Mobile on 21/10/25.
+//  Created by ORL on 21/10/25.
 //
 
 import Foundation
