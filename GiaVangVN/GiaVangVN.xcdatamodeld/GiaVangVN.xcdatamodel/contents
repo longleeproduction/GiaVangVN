@@ -12,8 +12,22 @@
         <attribute name="source" optional="NO" attributeType="String"/>
         <attribute name="bookmarkedAt" optional="NO" attributeType="Date" usesScalarValueType="NO"/>
     </entity>
+    <entity name="GoldTransaction" representedClassName="GoldTransaction" syncable="YES" codeGenerationType="class">
+        <attribute name="id" optional="NO" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="transactionType" optional="NO" attributeType="String"/>
+        <attribute name="goldProductRawValue" optional="NO" attributeType="String"/>
+        <attribute name="quantity" optional="NO" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="quantitySold" optional="NO" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="unitPrice" optional="NO" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="totalAmount" optional="NO" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="transactionDate" optional="NO" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="createdAt" optional="NO" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="notes" optional="YES" attributeType="String"/>
+        <attribute name="relatedBuyTransactionId" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+    </entity>
     <elements>
         <element name="Item" positionX="-63" positionY="-18" width="128" height="44"/>
         <element name="BookmarkedNews" positionX="-63" positionY="72" width="128" height="134"/>
+        <element name="GoldTransaction" positionX="-54" positionY="216" width="128" height="194"/>
     </elements>
 </model>

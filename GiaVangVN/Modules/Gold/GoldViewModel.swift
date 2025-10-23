@@ -7,6 +7,28 @@
 
 import Combine
 
+enum GoldBuyerProduct: String, CaseIterable {
+    case VangMiengSJC = "Vàng miếng SJC"
+    case VangNhanSJC = "Vàng nhẫn 9999"
+    case BacPhuQuy = "Bạc thỏi Phú Quý 999"
+    
+    var city: String {
+        switch self {
+        case .VangMiengSJC: return "Hồ Chí Minh"
+        case .VangNhanSJC: return "Hồ Chí Minh"
+        case .BacPhuQuy: return "Hà Nội"
+        }
+    }
+    
+    var branch: String {
+        switch self {
+        case .VangMiengSJC: return "SJC"
+        case .VangNhanSJC: return "SJC"
+        case .BacPhuQuy: return "PHUQUY"
+        }
+    }
+}
+
 enum GoldBranch: String, CaseIterable {
     case sjc = "sjc"
     case pnj = "pnj"

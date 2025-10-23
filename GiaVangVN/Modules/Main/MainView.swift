@@ -6,29 +6,43 @@
 //
 import SwiftUI
 
+enum MainTabItem: Hashable {
+    case home
+    case wallet
+    case gold
+    case currency
+    case settings
+}
+
 struct MainView: View {
     var body: some View {
         TabView {
             DashBoardView()
-                .tag(0)
+                .tag(MainTabItem.home)
                 .tabItem {
                     Label("Home", systemImage: "house")
                 }
             
+            WalletView()
+                .tag(MainTabItem.wallet)
+                .tabItem {
+                    Label("Wallet", systemImage: "wallet.pass")
+                }
+            
             GoldView()
-                .tag(1)
+                .tag(MainTabItem.gold)
                 .tabItem {
                     Label("Gold Price", systemImage: "g.circle")
                 }
             
             CurrencyView()
-                .tag(2)
+                .tag(MainTabItem.currency)
                 .tabItem {
                     Label("Currency", systemImage: "dollarsign.arrow.circlepath")
                 }
             
             SettingView()
-                .tag(3)
+                .tag(MainTabItem.settings)
                 .tabItem {
                     Label("Settings", systemImage: "circle.hexagongrid")
                 }
