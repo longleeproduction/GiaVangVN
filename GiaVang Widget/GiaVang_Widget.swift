@@ -10,11 +10,11 @@ import SwiftUI
 
 struct Provider: TimelineProvider {
     func placeholder(in context: Context) -> WidgetEntry {
-        WidgetEntry(date: Date(), goldSJC: nil, gold9999: nil, currency: nil)
+        WidgetEntry(date: Date(), goldSJC: nil, gold9999: nil, priceAg999: nil, currency: nil)
     }
 
     func getSnapshot(in context: Context, completion: @escaping (WidgetEntry) -> ()) {
-        let entry = WidgetEntry(date: Date(), goldSJC: nil, gold9999: nil, currency: nil)
+        let entry = WidgetEntry(date: Date(), goldSJC: nil, gold9999: nil, priceAg999: nil, currency: nil)
         completion(entry)
     }
 
@@ -23,6 +23,7 @@ struct Provider: TimelineProvider {
             // Fetch data from APIs
             var goldSJC: GoldPriceData?
             var gold9999: GoldPriceData?
+            var priceAg999: GoldPriceData?
             var currency: CurrencyPriceData?
 
             do {
@@ -48,6 +49,19 @@ struct Provider: TimelineProvider {
             }
 
             do {
+                // Fetch Silver Ag999 price
+                let ag999Request = GoldPriceRequest(
+                    product: "Bạc thỏi Phú Quý 999",
+                    city: "Hà Nội",
+                    branch: "PHUQUY"
+                )
+                let ag999Response = try await DashboardService.shared.fetchGoldPrice(request: ag999Request)
+                priceAg999 = ag999Response.data
+            } catch {
+                print("Error fetching Ag 999: \(error)")
+            }
+
+            do {
                 // Fetch USD currency price
                 let currencyRequest = CurrencyPriceRequest()
                 let currencyResponse = try await DashboardService.shared.fetchCurrencyPrice(request: currencyRequest)
@@ -62,6 +76,7 @@ struct Provider: TimelineProvider {
                 date: currentDate,
                 goldSJC: goldSJC,
                 gold9999: gold9999,
+                priceAg999: priceAg999,
                 currency: currency
             )
 
@@ -78,6 +93,7 @@ struct WidgetEntry: TimelineEntry {
     let date: Date
     let goldSJC: GoldPriceData?
     let gold9999: GoldPriceData?
+    let priceAg999: GoldPriceData?
     let currency: CurrencyPriceData?
 }
 
@@ -134,30 +150,30 @@ struct SmallWidgetView: View {
 
             // Gold SJC
             if let goldSJC = entry.goldSJC {
-                VStack(alignment: .leading, spacing: 3) {
+                VStack(alignment: .leading, spacing: 2) {
                     Text("Vàng SJC")
-                        .font(.system(size: 9))
+                        .font(.system(size: 8))
                         .foregroundColor(.secondary)
 
                     HStack(spacing: 4) {
-                        VStack(alignment: .leading, spacing: 2) {
+                        VStack(alignment: .leading, spacing: 1) {
                             Text("Mua")
-                                .font(.system(size: 8))
+                                .font(.system(size: 7))
                                 .foregroundColor(.secondary)
                             Text(ApiDecryptor.decrypt(goldSJC.buyDisplay))
-                                .font(.system(size: 11, weight: .semibold))
+                                .font(.system(size: 10, weight: .semibold))
                                 .foregroundColor(.green)
                                 .lineLimit(1)
                                 .minimumScaleFactor(0.5)
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
 
-                        VStack(alignment: .trailing, spacing: 2) {
+                        VStack(alignment: .trailing, spacing: 1) {
                             Text("Bán")
-                                .font(.system(size: 8))
+                                .font(.system(size: 7))
                                 .foregroundColor(.secondary)
                             Text(ApiDecryptor.decrypt(goldSJC.sellDisplay))
-                                .font(.system(size: 11, weight: .semibold))
+                                .font(.system(size: 10, weight: .semibold))
                                 .foregroundColor(.red)
                                 .lineLimit(1)
                                 .minimumScaleFactor(0.5)
@@ -165,12 +181,47 @@ struct SmallWidgetView: View {
                         .frame(maxWidth: .infinity, alignment: .trailing)
                     }
                 }
-                .padding(6)
+                .padding(5)
                 .background(Color.yellow.opacity(0.15))
                 .cornerRadius(6)
-            } else {
-                ProgressView()
-                    .frame(maxHeight: .infinity)
+            }
+
+            // Gold 9999
+            if let gold9999 = entry.gold9999 {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Vàng 9999")
+                        .font(.system(size: 8))
+                        .foregroundColor(.secondary)
+
+                    HStack(spacing: 4) {
+                        VStack(alignment: .leading, spacing: 1) {
+                            Text("Mua")
+                                .font(.system(size: 7))
+                                .foregroundColor(.secondary)
+                            Text(ApiDecryptor.decrypt(gold9999.buyDisplay))
+                                .font(.system(size: 10, weight: .semibold))
+                                .foregroundColor(.green)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.5)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                        VStack(alignment: .trailing, spacing: 1) {
+                            Text("Bán")
+                                .font(.system(size: 7))
+                                .foregroundColor(.secondary)
+                            Text(ApiDecryptor.decrypt(gold9999.sellDisplay))
+                                .font(.system(size: 10, weight: .semibold))
+                                .foregroundColor(.red)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.5)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                    }
+                }
+                .padding(5)
+                .background(Color.orange.opacity(0.15))
+                .cornerRadius(6)
             }
 
             Spacer(minLength: 0)
@@ -205,141 +256,160 @@ struct MediumWidgetView: View {
             Divider()
                 .padding(.vertical, -1)
 
-            HStack(spacing: 6) {
-                // Gold SJC
-                if let goldSJC = entry.goldSJC {
-                    VStack(alignment: .leading, spacing: 4) {
-                        HStack(spacing: 3) {
-                            Image(systemName: "circle.hexagongrid.fill")
-                                .font(.system(size: 9))
-                                .foregroundColor(.yellow)
-                            Text("Vàng SJC")
-                                .font(.system(size: 10, weight: .semibold))
-                        }
-
-                        HStack(spacing: 4) {
-                            VStack(alignment: .leading, spacing: 1) {
-                                Text("Mua")
-                                    .font(.system(size: 8))
-                                    .foregroundColor(.secondary)
-                                Text(ApiDecryptor.decrypt(goldSJC.buyDisplay))
-                                    .font(.system(size: 11, weight: .semibold))
-                                    .foregroundColor(.green)
-                                    .lineLimit(1)
-                                    .minimumScaleFactor(0.5)
-                                    .fixedSize(horizontal: false, vertical: true)
-
-                                HStack(spacing: 1) {
-                                    Image(systemName: getDeltaIcon(ApiDecryptor.decrypt(goldSJC.buyDelta)))
-                                        .font(.system(size: 7))
-                                        .foregroundColor(getDeltaColor(ApiDecryptor.decrypt(goldSJC.buyDelta)))
-                                    Text(ApiDecryptor.decrypt(goldSJC.buyPercent))
-                                        .font(.system(size: 7))
-                                        .foregroundColor(getDeltaColor(ApiDecryptor.decrypt(goldSJC.buyDelta)))
-                                }
-                            }
-                            .frame(maxWidth: .infinity, alignment: .leading)
-
-                            Divider()
-
-                            VStack(alignment: .leading, spacing: 1) {
-                                Text("Bán")
-                                    .font(.system(size: 8))
-                                    .foregroundColor(.secondary)
-                                Text(ApiDecryptor.decrypt(goldSJC.sellDisplay))
-                                    .font(.system(size: 11, weight: .semibold))
-                                    .foregroundColor(.red)
-                                    .lineLimit(1)
-                                    .minimumScaleFactor(0.5)
-                                    .fixedSize(horizontal: false, vertical: true)
-
-                                HStack(spacing: 1) {
-                                    Image(systemName: getDeltaIcon(ApiDecryptor.decrypt(goldSJC.sellDelta)))
-                                        .font(.system(size: 7))
-                                        .foregroundColor(getDeltaColor(ApiDecryptor.decrypt(goldSJC.sellDelta)))
-                                    Text(ApiDecryptor.decrypt(goldSJC.sellPercent))
-                                        .font(.system(size: 7))
-                                        .foregroundColor(getDeltaColor(ApiDecryptor.decrypt(goldSJC.sellDelta)))
-                                }
-                            }
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                        }
+            // 2x2 Grid Layout
+            VStack(spacing: 4) {
+                // Top Row: Gold SJC & Gold 9999
+                HStack(spacing: 4) {
+                    // Gold SJC
+                    if let goldSJC = entry.goldSJC {
+                        MediumPriceCard(
+                            icon: "circle.hexagongrid.fill",
+                            iconColor: .yellow,
+                            title: "Vàng miếng SJC",
+                            buyPrice: ApiDecryptor.decrypt(goldSJC.buyDisplay),
+                            sellPrice: ApiDecryptor.decrypt(goldSJC.sellDisplay),
+                            buyPercent: ApiDecryptor.decrypt(goldSJC.buyPercent),
+                            sellPercent: ApiDecryptor.decrypt(goldSJC.sellPercent),
+                            buyDelta: ApiDecryptor.decrypt(goldSJC.buyDelta),
+                            sellDelta: ApiDecryptor.decrypt(goldSJC.sellDelta),
+                            backgroundColor: Color.yellow.opacity(0.15)
+                        )
                     }
-                    .padding(6)
-                    .frame(maxWidth: .infinity)
-                    .background(Color.yellow.opacity(0.15))
-                    .cornerRadius(6)
-                } else {
-                    ProgressView()
-                        .frame(maxWidth: .infinity)
+
+                    // Gold 9999
+                    if let gold9999 = entry.gold9999 {
+                        MediumPriceCard(
+                            icon: "circle.hexagongrid.fill",
+                            iconColor: .orange,
+                            title: "Vàng nhẫn 9999",
+                            buyPrice: ApiDecryptor.decrypt(gold9999.buyDisplay),
+                            sellPrice: ApiDecryptor.decrypt(gold9999.sellDisplay),
+                            buyPercent: ApiDecryptor.decrypt(gold9999.buyPercent),
+                            sellPercent: ApiDecryptor.decrypt(gold9999.sellPercent),
+                            buyDelta: ApiDecryptor.decrypt(gold9999.buyDelta),
+                            sellDelta: ApiDecryptor.decrypt(gold9999.sellDelta),
+                            backgroundColor: Color.orange.opacity(0.15)
+                        )
+                    }
                 }
 
-                // Currency USD
-                if let currency = entry.currency {
-                    VStack(alignment: .leading, spacing: 4) {
-                        HStack(spacing: 3) {
-                            Image(systemName: "dollarsign.circle.fill")
-                                .font(.system(size: 9))
-                                .foregroundColor(.green)
-                            Text("USD")
-                                .font(.system(size: 10, weight: .semibold))
-                        }
-
-                        VStack(alignment: .leading, spacing: 2) {
-                            HStack(spacing: 2) {
-                                Text("Mua:")
-                                    .font(.system(size: 8))
-                                    .foregroundColor(.secondary)
-                                    .frame(width: 30, alignment: .leading)
-                                Text(ApiDecryptor.decrypt(currency.buyDisplay))
-                                    .font(.system(size: 10, weight: .semibold))
-                                    .foregroundColor(.green)
-                                    .lineLimit(1)
-                                    .minimumScaleFactor(0.5)
-                                Spacer()
-                                HStack(spacing: 1) {
-                                    Image(systemName: getDeltaIcon(ApiDecryptor.decrypt(currency.buyDelta)))
-                                        .font(.system(size: 6))
-                                        .foregroundColor(getDeltaColor(ApiDecryptor.decrypt(currency.buyDelta)))
-                                    Text(ApiDecryptor.decrypt(currency.buyPercent))
-                                        .font(.system(size: 6))
-                                        .foregroundColor(getDeltaColor(ApiDecryptor.decrypt(currency.buyDelta)))
-                                }
-                            }
-
-                            HStack(spacing: 2) {
-                                Text("Bán:")
-                                    .font(.system(size: 8))
-                                    .foregroundColor(.secondary)
-                                    .frame(width: 30, alignment: .leading)
-                                Text(ApiDecryptor.decrypt(currency.sellDisplay))
-                                    .font(.system(size: 10, weight: .semibold))
-                                    .foregroundColor(.red)
-                                    .lineLimit(1)
-                                    .minimumScaleFactor(0.5)
-                                Spacer()
-                                HStack(spacing: 1) {
-                                    Image(systemName: getDeltaIcon(ApiDecryptor.decrypt(currency.sellDelta)))
-                                        .font(.system(size: 6))
-                                        .foregroundColor(getDeltaColor(ApiDecryptor.decrypt(currency.sellDelta)))
-                                    Text(ApiDecryptor.decrypt(currency.sellPercent))
-                                        .font(.system(size: 6))
-                                        .foregroundColor(getDeltaColor(ApiDecryptor.decrypt(currency.sellDelta)))
-                                }
-                            }
-                        }
+                // Bottom Row: Silver Ag999 & Currency USD
+                HStack(spacing: 4) {
+                    // Silver Ag999
+                    if let priceAg999 = entry.priceAg999 {
+                        MediumPriceCard(
+                            icon: "circle.hexagongrid.fill",
+                            iconColor: .gray,
+                            title: "Bạc thỏi Phú Quý 999",
+                            buyPrice: ApiDecryptor.decrypt(priceAg999.buyDisplay),
+                            sellPrice: ApiDecryptor.decrypt(priceAg999.sellDisplay),
+                            buyPercent: ApiDecryptor.decrypt(priceAg999.buyPercent),
+                            sellPercent: ApiDecryptor.decrypt(priceAg999.sellPercent),
+                            buyDelta: ApiDecryptor.decrypt(priceAg999.buyDelta),
+                            sellDelta: ApiDecryptor.decrypt(priceAg999.sellDelta),
+                            backgroundColor: Color.gray.opacity(0.15)
+                        )
                     }
-                    .padding(6)
-                    .frame(maxWidth: .infinity)
-                    .background(Color.green.opacity(0.15))
-                    .cornerRadius(6)
-                } else {
-                    ProgressView()
-                        .frame(maxWidth: .infinity)
+
+                    // Currency USD
+                    if let currency = entry.currency {
+                        MediumPriceCard(
+                            icon: "dollarsign.circle.fill",
+                            iconColor: .green,
+                            title: "Tỷ giá USD",
+                            buyPrice: ApiDecryptor.decrypt(currency.buyDisplay),
+                            sellPrice: ApiDecryptor.decrypt(currency.sellDisplay),
+                            buyPercent: ApiDecryptor.decrypt(currency.buyPercent),
+                            sellPercent: ApiDecryptor.decrypt(currency.sellPercent),
+                            buyDelta: ApiDecryptor.decrypt(currency.buyDelta),
+                            sellDelta: ApiDecryptor.decrypt(currency.sellDelta),
+                            backgroundColor: Color.green.opacity(0.15)
+                        )
+                    }
                 }
             }
         }
-        .padding(8)
+    }
+}
+
+// MARK: - Medium Price Card Component
+struct MediumPriceCard: View {
+    let icon: String
+    let iconColor: Color
+    let title: String
+    let buyPrice: String
+    let sellPrice: String
+    let buyPercent: String
+    let sellPercent: String
+    let buyDelta: String
+    let sellDelta: String
+    let backgroundColor: Color
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            // Header
+            HStack(spacing: 2) {
+                Image(systemName: icon)
+                    .font(.system(size: 8))
+                    .foregroundColor(iconColor)
+                Text(title)
+                    .font(.system(size: 9, weight: .semibold))
+                    .lineLimit(1)
+            }
+
+            // Prices
+            VStack(alignment: .leading, spacing: 1) {
+                // Buy
+                HStack(spacing: 1) {
+                    Text("M:")
+                        .font(.system(size: 7))
+                        .foregroundColor(.secondary)
+                        .frame(width: 14, alignment: .leading)
+                    Text(buyPrice)
+                        .font(.system(size: 9, weight: .semibold))
+                        .foregroundColor(.green)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.4)
+                    Spacer()
+                    HStack(spacing: 0) {
+                        Image(systemName: getDeltaIcon(buyDelta))
+                            .font(.system(size: 7))
+                            .foregroundColor(getDeltaColor(buyDelta))
+                        Text(buyPercent)
+                            .font(.system(size: 7))
+                            .foregroundColor(getDeltaColor(buyDelta))
+                            .lineLimit(1)
+                    }
+                }
+
+                // Sell
+                HStack(spacing: 1) {
+                    Text("B:")
+                        .font(.system(size: 7))
+                        .foregroundColor(.secondary)
+                        .frame(width: 14, alignment: .leading)
+                    Text(sellPrice)
+                        .font(.system(size: 9, weight: .semibold))
+                        .foregroundColor(.red)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.4)
+                    Spacer()
+                    HStack(spacing: 0) {
+                        Image(systemName: getDeltaIcon(sellDelta))
+                            .font(.system(size: 7))
+                            .foregroundColor(getDeltaColor(sellDelta))
+                        Text(sellPercent)
+                            .font(.system(size: 7))
+                            .foregroundColor(getDeltaColor(sellDelta))
+                            .lineLimit(1)
+                    }
+                }
+            }
+        }
+        .padding(5)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .background(backgroundColor)
+        .cornerRadius(6)
     }
 }
 
@@ -608,7 +678,6 @@ struct LargeWidgetView: View {
 
             Spacer(minLength: 0)
         }
-        .padding(8)
     }
 }
 
@@ -637,17 +706,17 @@ private func getDeltaColor(_ delta: String) -> Color {
 #Preview(as: .systemSmall) {
     GiaVang_Widget()
 } timeline: {
-    WidgetEntry(date: .now, goldSJC: nil, gold9999: nil, currency: nil)
+    WidgetEntry(date: .now, goldSJC: nil, gold9999: nil, priceAg999: nil, currency: nil)
 }
 
 #Preview(as: .systemMedium) {
     GiaVang_Widget()
 } timeline: {
-    WidgetEntry(date: .now, goldSJC: nil, gold9999: nil, currency: nil)
+    WidgetEntry(date: .now, goldSJC: nil, gold9999: nil, priceAg999: nil, currency: nil)
 }
 
 #Preview(as: .systemLarge) {
     GiaVang_Widget()
 } timeline: {
-    WidgetEntry(date: .now, goldSJC: nil, gold9999: nil, currency: nil)
+    WidgetEntry(date: .now, goldSJC: nil, gold9999: nil, priceAg999: nil, currency: nil)
 }
