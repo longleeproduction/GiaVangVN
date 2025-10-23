@@ -66,10 +66,20 @@ struct DashboardNewsView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             // Header
-            Text("Tin tức mới nhất")
-                .font(.headline)
-                .foregroundColor(.primary)
-                .padding(.horizontal)
+            HStack {
+                Text("Tin tức mới nhất")
+                    .font(.headline)
+                    .foregroundColor(.primary)
+                    .padding(.horizontal)
+                Spacer()
+                
+                NavigationLink {
+                    NewsView()
+                } label: {
+                    Text("Xem thêm")
+                        .padding(.horizontal)
+                }
+            }
 
             if viewModel.isLoading && viewModel.newsItems.isEmpty {
                 // Loading state
@@ -135,43 +145,63 @@ struct DashboardNewsView: View {
 
 struct NewsItemCard: View {
     let newsItem: NewsResponse.NewsItem
-    
-    
+
+
     class NewsItemCardViewModel: ObservableObject {
         @Published var previewUrl: URL?
         @Published var isPresent: Bool = false
     }
-    
+
     @StateObject private var viewModel = NewsItemCardViewModel()
+    @StateObject private var bookmarkManager = BookmarkManager.shared
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            // Image
-            AsyncImage(url: URL(string: newsItem.imgUrl)) { phase in
-                switch phase {
-                case .empty:
-                    Rectangle()
-                        .fill(Color.gray.opacity(0.2))
-                        .overlay {
-                            ProgressView()
-                        }
-                case .success(let image):
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                case .failure:
-                    Rectangle()
-                        .fill(Color.gray.opacity(0.2))
-                        .overlay {
-                            Image(systemName: "photo")
-                                .foregroundColor(.gray)
-                        }
-                @unknown default:
-                    EmptyView()
+            // Image with Bookmark Button
+            ZStack(alignment: .topTrailing) {
+                AsyncImage(url: URL(string: newsItem.imgUrl)) { phase in
+                    switch phase {
+                    case .empty:
+                        Rectangle()
+                            .fill(Color.gray.opacity(0.2))
+                            .overlay {
+                                ProgressView()
+                            }
+                    case .success(let image):
+                        image
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                    case .failure:
+                        Rectangle()
+                            .fill(Color.gray.opacity(0.2))
+                            .overlay {
+                                Image(systemName: "photo")
+                                    .foregroundColor(.gray)
+                            }
+                    @unknown default:
+                        EmptyView()
+                    }
                 }
+                .frame(width: 280, height: 160)
+                .clipped()
+
+                // Bookmark Button
+                Button {
+                    bookmarkManager.toggleBookmark(newsItem)
+                } label: {
+                    Image(systemName: bookmarkManager.isBookmarked(newsItem) ? "bookmark.fill" : "bookmark")
+                        .font(.title3)
+                        .foregroundColor(.white)
+                        .padding(8)
+                        .background(
+                            Circle()
+                                .fill(Color.black.opacity(0.6))
+                                .shadow(color: Color.black.opacity(0.3), radius: 4, x: 0, y: 2)
+                        )
+                }
+                .padding(8)
             }
             .frame(width: 280, height: 160)
-            .clipped()
             .cornerRadius(12)
 
             // Title

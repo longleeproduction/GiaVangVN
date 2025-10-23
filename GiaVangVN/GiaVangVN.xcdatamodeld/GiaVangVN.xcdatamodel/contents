@@ -3,7 +3,17 @@
     <entity name="Item" representedClassName="Item" syncable="YES" codeGenerationType="class">
         <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
     </entity>
+    <entity name="BookmarkedNews" representedClassName="BookmarkedNews" syncable="YES" codeGenerationType="class">
+        <attribute name="title" optional="NO" attributeType="String"/>
+        <attribute name="desc" optional="NO" attributeType="String"/>
+        <attribute name="imgUrl" optional="NO" attributeType="String"/>
+        <attribute name="url" optional="NO" attributeType="String"/>
+        <attribute name="date" optional="NO" attributeType="String"/>
+        <attribute name="source" optional="NO" attributeType="String"/>
+        <attribute name="bookmarkedAt" optional="NO" attributeType="Date" usesScalarValueType="NO"/>
+    </entity>
     <elements>
         <element name="Item" positionX="-63" positionY="-18" width="128" height="44"/>
+        <element name="BookmarkedNews" positionX="-63" positionY="72" width="128" height="134"/>
     </elements>
 </model>
