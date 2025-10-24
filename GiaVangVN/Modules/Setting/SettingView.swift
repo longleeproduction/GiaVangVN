@@ -24,6 +24,14 @@ struct SettingView: View {
                         .padding()
                 }
 
+                
+                Button {
+                    AdsManager.shared().showInterstitialAdDiscover {}
+                } label: {
+                    Text("Show Ads")
+                        .padding()
+                }
+
             }.navigationTitle(Text("Settings"))
         }
     }
