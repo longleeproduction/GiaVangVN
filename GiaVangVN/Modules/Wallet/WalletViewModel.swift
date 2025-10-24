@@ -8,10 +8,15 @@
 import Foundation
 import Combine
 
+struct GoldPrice {
+    let buy: Double  // Price when market buys from you (lower)
+    let sell: Double // Price when market sells to you (higher)
+}
+
 @MainActor
 class WalletViewModel: ObservableObject {
     @Published var walletManager = WalletManager.shared
-    @Published var currentPrices: [GoldBuyerProduct: Double] = [:]
+    @Published var currentPrices: [GoldBuyerProduct: GoldPrice] = [:]
     @Published var isLoadingPrices: Bool = false
 
     @Published var totalInvestment: Double = 0
@@ -34,7 +39,10 @@ class WalletViewModel: ObservableObject {
         totalInvestment = walletManager.getTotalInvestment()
         totalSold = walletManager.getTotalSoldAmount()
         realizedProfitLoss = walletManager.getTotalProfitLoss()
-        unrealizedProfitLoss = walletManager.getUnrealizedProfitLoss(currentPrices: currentPrices)
+
+        // Calculate unrealized P/L using buy prices (what we can sell for)
+        let priceDict = currentPrices.mapValues { $0.buy }
+        unrealizedProfitLoss = walletManager.getUnrealizedProfitLoss(currentPrices: priceDict)
         totalProfitLoss = realizedProfitLoss + unrealizedProfitLoss
     }
 
@@ -65,11 +73,12 @@ class WalletViewModel: ObservableObject {
             let response = try await DashboardService.shared.fetchGoldPrice(request: request)
 
             if let data = response.data {
-                // Parse sellDisplay to get numeric value
-                // Remove commas and convert to Double
-                let priceString = data.sellDisplay.replacingOccurrences(of: ",", with: "")
-                if let sellPrice = Double(priceString) {
-                    currentPrices[product] = sellPrice
+                // Decrypt and parse both buy and sell prices
+                let buyString = ApiDecryptor.decrypt(data.buyDisplay).replacingOccurrences(of: ",", with: "")
+                let sellString = ApiDecryptor.decrypt(data.sellDisplay).replacingOccurrences(of: ",", with: "")
+
+                if let buyPrice = Double(buyString), let sellPrice = Double(sellString) {
+                    currentPrices[product] = GoldPrice(buy: buyPrice, sell: sellPrice)
                 }
             }
         } catch {

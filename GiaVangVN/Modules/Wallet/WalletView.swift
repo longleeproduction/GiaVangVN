@@ -28,7 +28,8 @@ struct WalletView: View {
                     Text("Đã bán").tag(Tab.sold)
                 }
                 .pickerStyle(.segmented)
-                .padding()
+                .padding(.horizontal)
+                .padding(.vertical, 8)
 
                 // Content
                 if selectedTab == .holdings {
@@ -139,7 +140,8 @@ struct WalletView: View {
                     ForEach(availableTransactions) { transaction in
                         BuyTransactionCard(
                             transaction: transaction,
-                            currentPrice: viewModel.currentPrices[transaction.goldProduct],
+                            currentPrice: viewModel.currentPrices[transaction.goldProduct]?.buy,
+                            currentMarketPrices: viewModel.currentPrices[transaction.goldProduct],
                             onDelete: {
                                 viewModel.deleteBuyTransaction(transaction)
                             }
@@ -245,7 +247,8 @@ struct WalletView: View {
 // MARK: - Buy Transaction Card
 struct BuyTransactionCard: View {
     let transaction: GoldTransactionModel
-    let currentPrice: Double?
+    let currentPrice: Double?  // Current buy price (what we can sell for)
+    let currentMarketPrices: GoldPrice?  // Full market prices
     let onDelete: () -> Void
 
     @State private var showSellSheet = false
@@ -313,32 +316,83 @@ struct BuyTransactionCard: View {
             }
 
             // Current Value & P/L
-            if let currentPrice = currentPrice {
+            if let currentPrice = currentPrice, let marketPrices = currentMarketPrices {
                 let currentValue = transaction.remainingQuantity * currentPrice
                 let costBasis = transaction.remainingQuantity * transaction.unitPrice
                 let profitLoss = currentValue - costBasis
 
-                HStack {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Giá hiện tại")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                        Text(formatCurrency(currentPrice))
-                            .font(.subheadline)
-                            .fontWeight(.semibold)
-                            .foregroundColor(.blue)
+                VStack(spacing: 12) {
+                    // Market Prices
+                    HStack {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Giá mua vào")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            Text(formatCurrency(marketPrices.sell))
+                                .font(.subheadline)
+                                .fontWeight(.semibold)
+                                .foregroundColor(.orange)
+                        }
+
+                        Spacer()
+
+                        VStack(alignment: .trailing, spacing: 4) {
+                            Text("Giá bán ra")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            Text(formatCurrency(marketPrices.buy))
+                                .font(.subheadline)
+                                .fontWeight(.semibold)
+                                .foregroundColor(.blue)
+                        }
                     }
 
-                    Spacer()
+                    Divider()
 
-                    VStack(alignment: .trailing, spacing: 4) {
-                        Text("Lãi/Lỗ")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                        Text(formatCurrency(profitLoss))
-                            .font(.subheadline)
-                            .fontWeight(.bold)
+                    // Current P/L
+                    HStack {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Giá trị hiện tại")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            Text(formatCurrency(currentValue))
+                                .font(.subheadline)
+                                .fontWeight(.semibold)
+                        }
+
+                        Spacer()
+
+                        VStack(alignment: .trailing, spacing: 4) {
+                            Text("Lãi/Lỗ")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            HStack(spacing: 4) {
+                                Image(systemName: profitLoss >= 0 ? "arrow.up.circle.fill" : "arrow.down.circle.fill")
+                                    .font(.caption)
+                                Text(formatCurrency(abs(profitLoss)))
+                                    .font(.subheadline)
+                                    .fontWeight(.bold)
+                            }
                             .foregroundColor(profitLoss >= 0 ? .green : .red)
+                        }
+                    }
+
+                    // Profit/Loss Percentage
+                    if costBasis > 0 {
+                        let profitPercent = (profitLoss / costBasis) * 100
+                        HStack {
+                            Spacer()
+                            Text(String(format: "%.2f%%", profitPercent))
+                                .font(.caption)
+                                .fontWeight(.medium)
+                                .foregroundColor(profitLoss >= 0 ? .green : .red)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .background(
+                                    (profitLoss >= 0 ? Color.green : Color.red).opacity(0.15)
+                                )
+                                .cornerRadius(6)
+                        }
                     }
                 }
             }
