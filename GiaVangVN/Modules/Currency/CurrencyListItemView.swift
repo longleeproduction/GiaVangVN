@@ -15,18 +15,7 @@ struct CurrencyListItemView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             // Header
-            VStack(alignment: .leading, spacing: 8) {
-                HStack {
-                    Image(systemName: "banknote")
-                        .foregroundColor(.blue)
-                    
-                    Text("VCB - Vietcombank")
-                        .font(.headline)
-                        .foregroundColor(.primary)
-                    
-                    Spacer()
-                }
-                
+            HStack(spacing: 8) {
                 HStack(spacing: 4) {
                     Image(systemName: "clock")
                         .font(.caption)
@@ -36,6 +25,8 @@ struct CurrencyListItemView: View {
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
+                
+                Spacer()
                 
                 Text("Đơn vị: \(data.unit)")
                     .font(.caption2)
@@ -47,6 +38,33 @@ struct CurrencyListItemView: View {
             .background(Color(.secondarySystemBackground))
             
             Divider()
+
+            HStack(spacing: 8) {
+                Text("Ngoại tệ")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundColor(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                Spacer()
+
+                Text("Mua vào")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundColor(.secondary)
+
+                Spacer()
+
+                Text("Bán ra")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundColor(.secondary)
+
+                Spacer()
+
+                Text("Chuyển khoản")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundColor(.secondary)
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
             
             // List
             ScrollView {

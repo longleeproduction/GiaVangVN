@@ -16,4 +16,12 @@ class MarketViewModel: ObservableObject {
     
     
     @Published var selectedTab: MarketTab = .Gold
+    
+    @Published var currentGoldBranch: GoldBranch = .sjc
+    
+    func getListGoldBranch() {
+        Task {
+            
+        }
+    }
 }

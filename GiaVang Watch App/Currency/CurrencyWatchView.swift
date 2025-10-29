@@ -59,9 +59,8 @@ struct CurrencyWatchView: View {
                 }
                 .padding(.bottom, 8)
             }
-            .onAppear {
-                viewModel.getDailyCurrency(type: .vcb)
-                viewModel.getDailyCurrency(type: .bidv)
+            .task {
+                viewModel.refreshData()
             }
             .environmentObject(viewModel)
         }

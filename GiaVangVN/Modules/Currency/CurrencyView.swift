@@ -55,9 +55,13 @@ struct CurrencyView: View {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
                         if selectedMode == .list {
-                            viewModel.getDailyCurrency(type: .vcb)
+                            Task {
+                                await viewModel.getDailyCurrency(type: .vcb)
+                            }
                         } else {
-                            viewModel.getChartCurrency(type: .vcb)
+                            Task {
+                                await viewModel.getChartCurrency(type: .vcb)
+                            }
                         }
                     } label: {
                         Image(systemName: "arrow.clockwise")
@@ -89,7 +93,9 @@ struct CurrencyView: View {
                 .foregroundColor(.secondary)
 
             Button {
-                viewModel.getDailyCurrency(type: .vcb)
+                Task {
+                    await viewModel.getDailyCurrency(type: .vcb)
+                }
             } label: {
                 Label("Làm mới", systemImage: "arrow.clockwise")
                     .font(.subheadline)
@@ -116,7 +122,10 @@ struct CurrencyView: View {
                 .foregroundColor(.secondary)
 
             Button {
-                viewModel.getChartCurrency(type: .vcb)
+                Task {
+                    await
+                    viewModel.getChartCurrency(type: .vcb)
+                }
             } label: {
                 Label("Làm mới", systemImage: "arrow.clockwise")
                     .font(.subheadline)

@@ -42,16 +42,4 @@ struct MarketView: View {
 }
 
 
-struct MarketGoldView: View {
-    var body: some View {
-        Text("Gold  View")
-    }
-}
 
-
-
-struct MarketCurrencyView: View {
-    var body: some View {
-        Text("Gold  View")
-    }
-}

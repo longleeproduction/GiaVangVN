@@ -11,96 +11,114 @@ struct CurrencyItemRow: View {
     let item: CurrencyDailyItem
 
     var body: some View {
-        VStack(spacing: 12) {
-            // Currency Header
-            HStack {
-                VStack(alignment: .leading, spacing: 4) {
+        HStack(spacing: 8) {
+            // Currency Name and Code with Flag
+            HStack(spacing: 8) {
+                Text(getFlagEmoji(for: item.code))
+                    .font(.system(size: 24))
+
+                VStack(alignment: .leading, spacing: 2) {
                     Text(item.name)
-                        .font(.headline)
+                        .font(.system(size: 14, weight: .medium))
                         .foregroundColor(.primary)
 
                     Text(item.code)
-                        .font(.caption)
+                        .font(.system(size: 11))
                         .foregroundColor(.secondary)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 2)
-                        .background(Color.blue.opacity(0.1))
-                        .cornerRadius(4)
                 }
-
-                Spacer()
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
 
-            // Price Grid
-            VStack(spacing: 8) {
-                // Buy Price
-                buildPriceRow(
-                    title: "Mua vào",
-                    price: ApiDecryptor.decrypt(item.buyDisplay),
-                    delta: ApiDecryptor.decrypt(item.buyDelta),
-                    percent: ApiDecryptor.decrypt(item.buyPercent),
-                    color: .green
-                )
+            Spacer()
 
-                // Transfer Price
-                buildPriceRow(
-                    title: "Chuyển khoản",
-                    price: ApiDecryptor.decrypt(item.transferDisplay),
-                    delta: ApiDecryptor.decrypt(item.transferDelta),
-                    percent: ApiDecryptor.decrypt(item.transferPercent),
-                    color: .blue
-                )
+            // Buy Price
+            buildPriceColumn(
+                price: ApiDecryptor.decrypt(item.buyDisplay),
+                delta: ApiDecryptor.decrypt(item.buyDelta)
+            )
 
-                // Sell Price
-                buildPriceRow(
-                    title: "Bán ra",
-                    price: ApiDecryptor.decrypt(item.sellDisplay),
-                    delta: ApiDecryptor.decrypt(item.sellDelta),
-                    percent: ApiDecryptor.decrypt(item.sellPercent),
-                    color: .red
-                )
-            }
+            Spacer()
+
+            // Sell Price
+            buildPriceColumn(
+                price: ApiDecryptor.decrypt(item.sellDisplay),
+                delta: ApiDecryptor.decrypt(item.sellDelta)
+            )
+
+            Spacer()
+
+            // Transfer Price
+            buildPriceColumn(
+                price: ApiDecryptor.decrypt(item.transferDisplay),
+                delta: ApiDecryptor.decrypt(item.transferDelta)
+            )
         }
-        .padding(16)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
     }
 
     @ViewBuilder
-    private func buildPriceRow(title: String, price: String, delta: String, percent: String, color: Color) -> some View {
-        HStack(spacing: 12) {
-            // Title
-            Text(title)
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-                .frame(width: 100, alignment: .leading)
-
-            // Price
+    private func buildPriceColumn(price: String, delta: String) -> some View {
+        VStack(alignment: .trailing, spacing: 2) {
             Text(price)
-                .font(.system(size: 16, weight: .semibold))
+                .font(.system(size: 14, weight: .medium))
                 .foregroundColor(.primary)
-                .frame(maxWidth: .infinity, alignment: .leading)
 
-            // Delta and Percent
-            HStack(spacing: 4) {
+            HStack(spacing: 2) {
                 Image(systemName: getPriceIcon(for: delta))
-                    .font(.caption2)
+                    .font(.system(size: 9))
                     .foregroundColor(getPriceColor(for: delta))
 
                 Text(formatDelta(delta))
-                    .font(.caption2)
+                    .font(.system(size: 11))
                     .foregroundColor(getPriceColor(for: delta))
-
-                Text(percent)
-                    .font(.caption2)
-                    .foregroundColor(.secondary)
             }
-            .frame(width: 90, alignment: .trailing)
         }
-        .padding(10)
-        .background(color.opacity(0.08))
-        .cornerRadius(8)
     }
 
     // MARK: - Helper Methods
+
+    private func getFlagEmoji(for code: String) -> String {
+        // Extract base currency code (handle USD(1-2-5) format)
+        let baseCurrency: String
+        if code.contains("(") {
+            baseCurrency = String(code.split(separator: "(").first ?? "")
+        } else {
+            baseCurrency = code
+        }
+
+        // Map currency codes to country flags
+        switch baseCurrency.uppercased() {
+        case "USD": return "🇺🇸" // US Dollar
+        case "EUR": return "🇪🇺" // Euro
+        case "GBP": return "🇬🇧" // British Pound
+        case "JPY": return "🇯🇵" // Japanese Yen
+        case "CNY", "CHY": return "🇨🇳" // Chinese Yuan
+        case "AUD": return "🇦🇺" // Australian Dollar
+        case "CAD": return "🇨🇦" // Canadian Dollar
+        case "CHF": return "🇨🇭" // Swiss Franc
+        case "HKD": return "🇭🇰" // Hong Kong Dollar
+        case "SGD": return "🇸🇬" // Singapore Dollar
+        case "KRW": return "🇰🇷" // South Korean Won
+        case "THB": return "🇹🇭" // Thai Baht
+        case "MYR": return "🇲🇾" // Malaysian Ringgit
+        case "NZD": return "🇳🇿" // New Zealand Dollar
+        case "INR": return "🇮🇳" // Indian Rupee
+        case "RUB": return "🇷🇺" // Russian Ruble
+        case "DKK": return "🇩🇰" // Danish Krone
+        case "NOK": return "🇳🇴" // Norwegian Krone
+        case "SEK": return "🇸🇪" // Swedish Krona
+        case "KWD": return "🇰🇼" // Kuwaiti Dinar
+        case "SAR": return "🇸🇦" // Saudi Riyal
+        case "AED": return "🇦🇪" // UAE Dirham
+        case "LAK": return "🇱🇦" // Lao Kip
+        case "KHR": return "🇰🇭" // Cambodian Riel
+        case "IDR": return "🇮🇩" // Indonesian Rupiah
+        case "PHP": return "🇵🇭" // Philippine Peso
+        case "TWD": return "🇹🇼" // Taiwan Dollar
+        default: return "💱" // Generic currency exchange symbol
+        }
+    }
 
     private func getPriceIcon(for delta: String) -> String {
         if delta.hasPrefix("-") {

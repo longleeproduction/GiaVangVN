@@ -14,6 +14,8 @@ enum CurrencyType: String, CaseIterable {
 
 class CurrencyViewModel: ObservableObject {
     
+    @Published var isLoading: Bool = false
+    
     @Published var vcb: CurrencyDailyData?
     @Published var bidv: CurrencyDailyData?
     
@@ -21,57 +23,62 @@ class CurrencyViewModel: ObservableObject {
     @Published var bidvChart: CurrencyListData?
     
     init() {
-        getDailyCurrency(type: .vcb)
-        
-        getChartCurrency(type: .vcb)
     }
     
-    func getDailyCurrency(type: CurrencyType) {
+    func refreshData() {
+        isLoading = true
         Task {
-            do {
-                let response = try await CurrencyService.shared.fetchCurrencyDaily(request: CurrencyDailyRequest(branch: type.rawValue))
-
-                if let data = response.data {
-                    await MainActor.run {
-                        if type == .vcb {
-                            vcb = data
-                        }
-                        
-                        if type == .bidv {
-                            bidv = data
-                        }
-                    }
-                }
-                
-            } catch {
-                debugPrint("ERROR ---> CurrencyViewModel")
-                debugPrint(error)
+            await getDailyCurrency(type: .vcb)
+            await getDailyCurrency(type: .bidv)
+            
+            await MainActor.run {
+                isLoading = false
             }
         }
     }
     
-    func getChartCurrency(type: CurrencyType) {
-        Task {
-            do {
-                let response = try await CurrencyService.shared.fetchCurrencyList(request: CurrencyListRequest(branch: type.rawValue, range: 60))
+    func getDailyCurrency(type: CurrencyType) async {
+        do {
+            let response = try await CurrencyService.shared.fetchCurrencyDaily(request: CurrencyDailyRequest(branch: type.rawValue))
 
-                if let data = response.data {
-                    debugPrint("Get data chart currency successfully: \(data.list.count) items")
-                    await MainActor.run {
-                        if type == .vcb {
-                            vcbChart = data
-                        }
-                        
-                        if type == .bidv {
-                            bidvChart = data
-                        }
+            if let data = response.data {
+                await MainActor.run {
+                    if type == .vcb {
+                        vcb = data
+                    }
+                    
+                    if type == .bidv {
+                        bidv = data
                     }
                 }
-                
-            } catch {
-                debugPrint("ERROR ---> CurrencyViewModel")
-                debugPrint(error)
             }
+            
+        } catch {
+            debugPrint("ERROR ---> CurrencyViewModel")
+            debugPrint(error)
+        }
+    }
+    
+    func getChartCurrency(type: CurrencyType) async {
+        do {
+            let response = try await CurrencyService.shared.fetchCurrencyList(request: CurrencyListRequest(branch: type.rawValue, range: 60))
+
+            if let data = response.data {
+                debugPrint("Get data chart currency successfully: \(data.list.count) items")
+                await MainActor.run {
+                    if type == .vcb {
+                        vcbChart = data
+                    }
+                    
+                    if type == .bidv {
+                        bidvChart = data
+                    }
+                }
+            }
+            
+        } catch {
+            debugPrint("ERROR ---> CurrencyViewModel")
+            debugPrint(error)
         }
     }
 }

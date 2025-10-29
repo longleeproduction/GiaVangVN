@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(xcodebuild:*)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "WebFetch(domain:www.figma.com)"
     ],
     "deny": [],
     "ask": []

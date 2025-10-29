@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5D3871CD2EB1FABB00C657E9 /* SwiftUIIntrospect in Frameworks */ = {isa = PBXBuildFile; productRef = 5D3871CC2EB1FABB00C657E9 /* SwiftUIIntrospect */; };
+		5D3871D02EB1FACB00C657E9 /* SwiftyStoreKit in Frameworks */ = {isa = PBXBuildFile; productRef = 5D3871CF2EB1FACB00C657E9 /* SwiftyStoreKit */; };
 		5D4DA3472E9F9E7100426F54 /* SwifterSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 5D4DA3462E9F9E7100426F54 /* SwifterSwift */; };
 		5D620B672EA9DEA300F0A219 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5D620B662EA9DEA300F0A219 /* WidgetKit.framework */; };
 		5D620B692EA9DEA300F0A219 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5D620B682EA9DEA300F0A219 /* SwiftUI.framework */; };
@@ -180,6 +182,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5D3871CD2EB1FABB00C657E9 /* SwiftUIIntrospect in Frameworks */,
+				5D3871D02EB1FACB00C657E9 /* SwiftyStoreKit in Frameworks */,
 				5DB0B31D2EA789DA003962E0 /* GoogleMobileAds in Frameworks */,
 				5D4DA3472E9F9E7100426F54 /* SwifterSwift in Frameworks */,
 			);
@@ -261,6 +265,8 @@
 			packageProductDependencies = (
 				5D4DA3462E9F9E7100426F54 /* SwifterSwift */,
 				5DB0B31C2EA789DA003962E0 /* GoogleMobileAds */,
+				5D3871CC2EB1FABB00C657E9 /* SwiftUIIntrospect */,
+				5D3871CF2EB1FACB00C657E9 /* SwiftyStoreKit */,
 			);
 			productName = GiaVangVN;
 			productReference = 5D4DA30C2E9F95A300426F54 /* GiaVangVN.app */;
@@ -343,6 +349,8 @@
 			packageReferences = (
 				5D4DA3452E9F9E7100426F54 /* XCRemoteSwiftPackageReference "SwifterSwift" */,
 				5DB0B31B2EA789DA003962E0 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
+				5D3871CB2EB1FABB00C657E9 /* XCRemoteSwiftPackageReference "swiftui-introspect" */,
+				5D3871CE2EB1FACB00C657E9 /* XCRemoteSwiftPackageReference "SwiftyStoreKit" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 5D4DA30D2E9F95A300426F54 /* Products */;
@@ -802,6 +810,22 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		5D3871CB2EB1FABB00C657E9 /* XCRemoteSwiftPackageReference "swiftui-introspect" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/siteline/swiftui-introspect";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 26.0.0;
+			};
+		};
+		5D3871CE2EB1FACB00C657E9 /* XCRemoteSwiftPackageReference "SwiftyStoreKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/bizz84/SwiftyStoreKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.16.4;
+			};
+		};
 		5D4DA3452E9F9E7100426F54 /* XCRemoteSwiftPackageReference "SwifterSwift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SwifterSwift/SwifterSwift";
@@ -821,6 +845,16 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		5D3871CC2EB1FABB00C657E9 /* SwiftUIIntrospect */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5D3871CB2EB1FABB00C657E9 /* XCRemoteSwiftPackageReference "swiftui-introspect" */;
+			productName = SwiftUIIntrospect;
+		};
+		5D3871CF2EB1FACB00C657E9 /* SwiftyStoreKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5D3871CE2EB1FACB00C657E9 /* XCRemoteSwiftPackageReference "SwiftyStoreKit" */;
+			productName = SwiftyStoreKit;
+		};
 		5D4DA3462E9F9E7100426F54 /* SwifterSwift */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 5D4DA3452E9F9E7100426F54 /* XCRemoteSwiftPackageReference "SwifterSwift" */;
