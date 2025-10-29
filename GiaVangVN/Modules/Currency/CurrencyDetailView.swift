@@ -212,6 +212,17 @@ struct CurrencyDetailView: View {
         }
 
         if !chartData.isEmpty {
+            // Calculate min and max values for better Y-axis scaling
+            let prices = chartData.map { $0.1 }
+            let minPrice = prices.min() ?? 0
+            let maxPrice = prices.max() ?? 0
+
+            // Calculate range and add padding (10% on each side)
+            let range = maxPrice - minPrice
+            let padding = max(range * 0.15, 1.0) // At least 1 unit of padding
+            let yMin = minPrice - padding
+            let yMax = maxPrice + padding
+
             Chart {
                 ForEach(Array(chartData.enumerated()), id: \.offset) { index, data in
                     LineMark(
@@ -219,8 +230,14 @@ struct CurrencyDetailView: View {
                         y: .value("Price", data.1)
                     )
                     .foregroundStyle(currencyType == .vcb ? .blue : .orange)
-                    .lineStyle(StrokeStyle(lineWidth: 2))
+                    .lineStyle(StrokeStyle(lineWidth: 3))
                     .interpolationMethod(.catmullRom)
+                    .symbol {
+                        Circle()
+                            .fill(currencyType == .vcb ? Color.blue : Color.orange)
+                            .frame(width: 6, height: 6)
+                    }
+                    .symbolSize(30)
 
                     AreaMark(
                         x: .value("Date", index),
@@ -240,19 +257,23 @@ struct CurrencyDetailView: View {
                 }
             }
             .chartXAxis(.hidden)
+            .chartYScale(domain: yMin...yMax)
             .chartYAxis {
-                AxisMarks(position: .leading) { value in
+                AxisMarks(position: .leading, values: .stride(by: range / 4)) { value in
                     if let price = value.as(Double.self) {
                         AxisValueLabel {
-                            Text(formatPrice(price))
-                                .font(.caption2)
+                            Text(formatChartPrice(price))
+                                .font(.system(size: 11))
+                                .foregroundColor(.secondary)
                         }
-                        AxisGridLine()
+                        AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5, dash: [2, 2]))
+                            .foregroundStyle(Color.gray.opacity(0.3))
                     }
                 }
             }
-            .frame(height: 200)
+            .frame(height: 220)
             .padding(.horizontal)
+            .clipped()
         }
     }
 
@@ -332,6 +353,14 @@ struct CurrencyDetailView: View {
         } else {
             return formatter.string(from: NSNumber(value: price)) ?? "\(Int(price))"
         }
+    }
+
+    private func formatChartPrice(_ price: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.maximumFractionDigits = 0
+        formatter.groupingSeparator = ","
+        return formatter.string(from: NSNumber(value: price)) ?? "\(Int(price))"
     }
 
     private func getPriceIcon(for delta: String) -> String {
