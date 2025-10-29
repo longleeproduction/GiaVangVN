@@ -11,6 +11,7 @@ import SwiftUI
 struct CurrencyListItemView: View {
     
     var data: CurrencyDailyData
+    var currencyType: CurrencyType
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -64,8 +65,12 @@ struct CurrencyListItemView: View {
             ScrollView {
                 LazyVStack(spacing: 0) {
                     ForEach(data.list) { item in
-                        CurrencyItemRow(item: item)
-                        
+                        NavigationLink {
+                            CurrencyDetailView(item: item, currencyType: currencyType)
+                        } label: {
+                            CurrencyItemRow(item: item)
+                        }.buttonStyle(.plain)
+
                         if item.id != data.list.last?.id {
                             Divider()
                                 .padding(.leading, 16)

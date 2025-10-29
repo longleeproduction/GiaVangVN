@@ -35,7 +35,7 @@ struct CurrencyView: View {
                 // Content based on selected mode
                 if selectedMode == .list {
                     if let vcbData = viewModel.vcb {
-                        buildCurrencyList(data: vcbData)
+                        buildCurrencyList(data: vcbData, currencyType: .vcb)
                     } else {
                         buildEmptyState()
                     }
@@ -73,8 +73,8 @@ struct CurrencyView: View {
     }
 
     @ViewBuilder
-    private func buildCurrencyList(data: CurrencyDailyData) -> some View {
-        CurrencyListItemView(data: data)
+    private func buildCurrencyList(data: CurrencyDailyData, currencyType: CurrencyType) -> some View {
+        CurrencyListItemView(data: data, currencyType: currencyType)
     }
 
     @ViewBuilder

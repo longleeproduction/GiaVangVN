@@ -35,10 +35,10 @@ struct MarketCurrencyView: View {
                         .padding(.horizontal, 16)
                     
                     if isShowVCB && viewModel.vcb != nil {
-                        CurrencyListItemView(data: viewModel.vcb!)
+                        CurrencyListItemView(data: viewModel.vcb!, currencyType: .vcb)
                     }
                     if !isShowVCB && viewModel.bidv != nil {
-                        CurrencyListItemView(data: viewModel.bidv!)
+                        CurrencyListItemView(data: viewModel.bidv!, currencyType: .bidv)
                     }
                 }
             }
