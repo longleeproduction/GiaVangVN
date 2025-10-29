@@ -76,26 +76,28 @@ struct NewsView: View {
     @StateObject private var bookmarkManager = BookmarkManager.shared
 
     var body: some View {
-        VStack(spacing: 0) {
-            // Tab Picker
-            Picker("Loại tin", selection: $viewModel.selectedTab) {
-                Text("Tất cả").tag(NewsViewModel.NewsTab.all)
-                Text("Đã lưu").tag(NewsViewModel.NewsTab.bookmarked)
+        NavigationStack {
+            VStack(spacing: 0) {
+                // Tab Picker
+                Picker("Loại tin", selection: $viewModel.selectedTab) {
+                    Text("Tất cả").tag(NewsViewModel.NewsTab.all)
+                    Text("Đã lưu").tag(NewsViewModel.NewsTab.bookmarked)
+                }
+                .pickerStyle(.segmented)
+                .padding()
+                
+                // Content
+                if viewModel.selectedTab == .all {
+                    allNewsView
+                } else {
+                    bookmarkedNewsView
+                }
             }
-            .pickerStyle(.segmented)
-            .padding()
-
-            // Content
-            if viewModel.selectedTab == .all {
-                allNewsView
-            } else {
-                bookmarkedNewsView
+            .navigationTitle("Tin tức")
+            .navigationBarTitleDisplayMode(.inline)
+            .task {
+                await viewModel.refreshData()
             }
-        }
-        .navigationTitle("Tin tức")
-        .navigationBarTitleDisplayMode(.inline)
-        .task {
-            await viewModel.refreshData()
         }
     }
 

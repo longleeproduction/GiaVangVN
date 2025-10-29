@@ -14,31 +14,32 @@ struct GoldCalculatorView: View {
     @State private var showingWeightConversion = false
     
     var body: some View {
-        ScrollView {
-            VStack(spacing: 0) {
-                // Gold Type Selector
-                goldTypeSelector
-                
-                // Weight Input Section
-                weightInputSection
-                
-                // Quick Weight Buttons
-                quickWeightButtons
-                
-                // Total Price Display
-                totalPriceDisplay
-                
-                // Price Breakdown
-                priceBreakdownSection
-                
-                // Conversion
-                WeightConversionView(viewModel: viewModel)
-            }
-            .background(Color(UIColor.systemGray6))
-            .navigationTitle("Gold Calculator")
-            .navigationBarTitleDisplayMode(.inline)
-            .sheet(isPresented: $showingWeightConversion) {
-                WeightConversionView(viewModel: viewModel)
+        NavigationStack {
+            ScrollView {
+                VStack(spacing: 0) {
+                    // Gold Type Selector
+                    goldTypeSelector
+                    
+                    // Weight Input Section
+                    weightInputSection
+                    
+                    // Quick Weight Buttons
+                    quickWeightButtons
+                    
+                    // Total Price Display
+                    totalPriceDisplay
+                    
+                    // Price Breakdown
+                    priceBreakdownSection
+                    
+                    // Conversion
+                    WeightConversionView(viewModel: viewModel)
+                }
+                .navigationTitle("Chuyển đổi")
+                .navigationBarTitleDisplayMode(.inline)
+                .sheet(isPresented: $showingWeightConversion) {
+                    WeightConversionView(viewModel: viewModel)
+                }
             }
         }
     }

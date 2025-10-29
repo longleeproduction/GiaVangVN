@@ -12,7 +12,5 @@ import SwiftUI
 struct GiaVang_WidgetBundle: WidgetBundle {
     var body: some Widget {
         GiaVang_Widget()
-//        GiaVang_WidgetControl()
-//        GiaVang_WidgetLiveActivity()
     }
 }

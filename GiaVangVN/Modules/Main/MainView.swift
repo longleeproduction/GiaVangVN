@@ -7,46 +7,62 @@
 import SwiftUI
 
 enum MainTabItem: Hashable {
-    case home
+    case market
     case wallet
-    case gold
-    case currency
+    case calculator
+    case news
     case settings
 }
 
 struct MainView: View {
+    // Check if running iOS 18 or later
+    private var isIOS18OrLater: Bool {
+        if #available(iOS 18.0, *) {
+            return true
+        }
+        return false
+    }
+
+    // Get wallet icon based on iOS version
+    private var walletIconName: String {
+        isIOS18OrLater ? "wallet.bifold" : "wallet.pass"
+    }
+
     var body: some View {
         TabView {
-            DashBoardView()
-                .tag(MainTabItem.home)
+            MarketView()
+                .tag(MainTabItem.market)
                 .tabItem {
-                    Label("Home", systemImage: "house")
+                    Label("Thị trường", systemImage: "chart.bar.xaxis")
                 }
-            
+
+            GoldCalculatorView()
+                .tag(MainTabItem.calculator)
+                .tabItem {
+                    Label("Chuyển đổi", systemImage: "function")
+                }
+
+
             WalletView()
                 .tag(MainTabItem.wallet)
                 .tabItem {
-                    Label("Wallet", systemImage: "wallet.pass")
+                    Label("Ví", systemImage: walletIconName)
                 }
             
-            GoldView()
-                .tag(MainTabItem.gold)
-                .tabItem {
-                    Label("Gold Price", systemImage: "g.circle")
-                }
             
-            CurrencyView()
-                .tag(MainTabItem.currency)
+            NewsView()
+                .tag(MainTabItem.news)
                 .tabItem {
-                    Label("Currency", systemImage: "dollarsign.arrow.circlepath")
+                    Label("Tin tức", systemImage: "newspaper")
                 }
             
             SettingView()
                 .tag(MainTabItem.settings)
                 .tabItem {
-                    Label("Settings", systemImage: "circle.hexagongrid")
+                    Label("Cài đặt", systemImage: "gear")
                 }
         }
+        .tint(Color(hex: "FFAC30"))
     }
 }
 
