@@ -29,7 +29,10 @@ struct MarketCurrencyView: View {
                         itemBranch(title: "BIDV", isSelected: !isShowVCB) {
                             isShowVCB = false
                         }
-                    }
+                        
+                        Spacer()
+                    }.padding(.bottom, 8)
+                        .padding(.horizontal, 16)
                     
                     if isShowVCB && viewModel.vcb != nil {
                         CurrencyListItemView(data: viewModel.vcb!)
@@ -51,10 +54,19 @@ struct MarketCurrencyView: View {
         } label: {
             Text(title)
                 .foregroundStyle(isSelected ? .black : .white)
+                .font(.system(size: 12, weight: isSelected ? .bold : .regular))
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
-        }.background(isSelected ? Color.brown : .clear)
-            .clipShape(RoundedRectangle(cornerRadius: 8))
+        }
+        .background(isSelected ? Color.brown : .clear)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(
+                    Color.secondary,
+                    lineWidth: isSelected ? 0 : 1
+                )
+        )
     }
 }
 

@@ -11,7 +11,7 @@ struct CurrencyItemRow: View {
     let item: CurrencyDailyItem
 
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: 4) {
             // Currency Name and Code with Flag
             HStack(spacing: 8) {
                 Text(getFlagEmoji(for: item.code))
@@ -29,29 +29,26 @@ struct CurrencyItemRow: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
-            Spacer()
-
             // Buy Price
             buildPriceColumn(
                 price: ApiDecryptor.decrypt(item.buyDisplay),
                 delta: ApiDecryptor.decrypt(item.buyDelta)
             )
-
-            Spacer()
+            .frame(width: 60, alignment: .trailing)
 
             // Sell Price
             buildPriceColumn(
                 price: ApiDecryptor.decrypt(item.sellDisplay),
                 delta: ApiDecryptor.decrypt(item.sellDelta)
             )
-
-            Spacer()
+            .frame(width: 60, alignment: .trailing)
 
             // Transfer Price
             buildPriceColumn(
                 price: ApiDecryptor.decrypt(item.transferDisplay),
                 delta: ApiDecryptor.decrypt(item.transferDelta)
             )
+            .frame(width: 60, alignment: .trailing)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 12)

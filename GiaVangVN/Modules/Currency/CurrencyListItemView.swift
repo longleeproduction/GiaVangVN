@@ -33,35 +33,29 @@ struct CurrencyListItemView: View {
                     .foregroundColor(.secondary)
             }
             .padding(.horizontal, 16)
-            .padding(.vertical, 12)
+            .padding(.bottom, 8)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Color(.secondarySystemBackground))
-            
-            Divider()
 
-            HStack(spacing: 8) {
+            HStack(spacing: 4) {
                 Text("Ngoại tệ")
                     .font(.system(size: 13, weight: .semibold))
                     .foregroundColor(.secondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
 
-                Spacer()
-
                 Text("Mua vào")
                     .font(.system(size: 13, weight: .semibold))
                     .foregroundColor(.secondary)
-
-                Spacer()
+                    .frame(width: 60, alignment: .trailing)
 
                 Text("Bán ra")
                     .font(.system(size: 13, weight: .semibold))
                     .foregroundColor(.secondary)
+                    .frame(width: 60, alignment: .trailing)
 
-                Spacer()
-
-                Text("Chuyển khoản")
+                Text("Mua CK")
                     .font(.system(size: 13, weight: .semibold))
                     .foregroundColor(.secondary)
+                    .frame(width: 60, alignment: .trailing)
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 8)
