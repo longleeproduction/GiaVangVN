@@ -12,7 +12,7 @@ struct MarketGoldView: View {
     @EnvironmentObject private var viewModel : MarketViewModel
     
     var body: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
+        ScrollView(showsIndicators: false) {
 
             VStack {
             // Biểu đồ

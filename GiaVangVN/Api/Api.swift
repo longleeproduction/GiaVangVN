@@ -38,6 +38,16 @@ enum ListRange: Int, CaseIterable {
     case Range60d = 60
     case Range180d = 180
     case Range365d = 365
+    
+    var title: String {
+        switch self {
+        case .Range7d: return "7 ngày"
+        case .Range30d: return "30 ngày"
+        case .Range60d: return "60 ngày"
+        case .Range180d: return "180 ngày"
+        case .Range365d: return "1 năm"
+        }
+    }
 }
 
 func createApiSession() -> URLSession {

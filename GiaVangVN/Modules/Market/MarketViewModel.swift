@@ -7,6 +7,21 @@
 
 import Combine
 
+class GoldMarket {
+    var branch: GoldBranch
+    var city: String
+    var product: String
+    
+    var data7Day: GoldListData? = nil
+    
+    init(branch: GoldBranch, city: String, product: String) {
+        self.branch = branch
+        self.city = city
+        self.product = product
+    }
+    
+}
+
 class MarketViewModel: ObservableObject {
     
     enum MarketTab {

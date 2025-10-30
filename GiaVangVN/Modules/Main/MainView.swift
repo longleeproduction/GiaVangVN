@@ -11,6 +11,7 @@ enum MainTabItem: Hashable {
     case wallet
     case calculator
     case news
+    case gold
     case settings
 }
 
@@ -36,6 +37,13 @@ struct MainView: View {
                     Label("Thị trường", systemImage: "chart.bar.xaxis")
                         .tint(Color(hex: "FFAC30"))
                 }
+            
+            GoldView()
+                .tag(MainTabItem.gold)
+                .tabItem {
+                    Label("Giá Vàng", systemImage: "chart.bar.xaxis")
+                        .tint(Color(hex: "FFAC30"))
+                }
 
             GoldCalculatorView()
                 .tag(MainTabItem.calculator)
@@ -58,11 +66,11 @@ struct MainView: View {
                     Label("Tin tức", systemImage: "newspaper")
                 }.tint(Color(hex: "FFAC30"))
             
-            SettingView()
-                .tag(MainTabItem.settings)
-                .tabItem {
-                    Label("Cài đặt", systemImage: "gear")
-                }.tint(Color(hex: "FFAC30"))
+//            SettingView()
+//                .tag(MainTabItem.settings)
+//                .tabItem {
+//                    Label("Cài đặt", systemImage: "gear")
+//                }.tint(Color(hex: "FFAC30"))
         }
         
     }

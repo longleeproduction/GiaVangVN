@@ -8,6 +8,7 @@
 import Foundation
 import UIKit
 import GoogleMobileAds
+import SwiftRater
 
 class AppDelegate: NSObject, UIApplicationDelegate {
     
@@ -31,6 +32,13 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 //                AdsManager.shared().loadInterstitialAdDiscover()
 //            }
 //        }
+        
+        SwiftRater.daysUntilPrompt = 7
+        SwiftRater.usesUntilPrompt = 10
+        SwiftRater.significantUsesUntilPrompt = 3
+        SwiftRater.daysBeforeReminding = 1
+        SwiftRater.showLaterButton = true
+        SwiftRater.appLaunched()
 
         return true
     }

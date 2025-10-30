@@ -161,7 +161,8 @@ struct CurrencyDetailView: View {
             }
         }
         .frame(maxWidth: .infinity)
-        .padding()
+        .padding(.horizontal, 6)
+        .padding(.bottom, 12)
         .background(color.opacity(0.1))
         .cornerRadius(12)
     }

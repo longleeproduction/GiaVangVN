@@ -15,55 +15,53 @@ enum GoldViewMode: String, CaseIterable {
 struct GoldView: View {
 
     @StateObject private var viewModel = GoldViewModel()
-    @State private var selectedMode: GoldViewMode = .list
+    
+    @State private var currentBranch: GoldBranch = GoldBranch.sjc
 
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                // Segment Control
-                Picker("View Mode", selection: $selectedMode) {
-                    ForEach(GoldViewMode.allCases, id: \.self) { mode in
-                        Text(mode.rawValue).tag(mode)
+                // Branch selector buttons
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 12) {
+                        ForEach(GoldBranch.allCases, id: \.self) { item in
+                            Button {
+                                withAnimation {
+                                    currentBranch = item
+                                }
+                            } label: {
+                                Text(item.title)
+                                    .font(.subheadline)
+                                    .fontWeight(currentBranch == item ? .semibold : .regular)
+                                    .foregroundColor(currentBranch == item ? .white : .primary)
+                                    .padding(.horizontal, 16)
+                                    .padding(.vertical, 8)
+                                    .background(
+                                        currentBranch == item ?
+                                        Color.accentColor :
+                                        Color(.systemGray5)
+                                    )
+                                    .cornerRadius(20)
+                            }
+                        }
                     }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 12)
                 }
-                .pickerStyle(.segmented)
-                .padding(.horizontal, 16)
-                .padding(.vertical, 8)
+                .background(Color(.systemBackground))
 
                 Divider()
 
-                // Content based on selected mode
-                if selectedMode == .list {
-                    if let goldData = viewModel.sjc {
-                        buildGoldList(data: goldData)
-                    } else {
-                        buildEmptyState()
-                    }
-                } else {
-                    if let chartData = viewModel.sjcChart {
-                        ScrollView {
-                            GoldChartView(data: chartData)
-                                .padding(.top, 16)
-                        }
-                    } else {
-                        buildChartEmptyState()
+                // TabView with branch pages
+                TabView(selection: $currentBranch) {
+                    ForEach(GoldBranch.allCases, id: \.self) { branch in
+                        GoldBranchPageView(branch: branch)
+                            .tag(branch)
                     }
                 }
+                .tabViewStyle(.page(indexDisplayMode: .never))
             }
-            .navigationTitle(Text("Gold"))
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button {
-                        if selectedMode == .list {
-                            viewModel.getDailyGold(branch: .sjc)
-                        } else {
-                            viewModel.getChartGold(branch: .sjc)
-                        }
-                    } label: {
-                        Image(systemName: "arrow.clockwise")
-                    }
-                }
-            }
+            .navigationTitle("Giá vàng")
             .environmentObject(viewModel)
         }
     }

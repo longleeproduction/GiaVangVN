@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5D114B082EB3208C00A7C08F /* ActivityIndicatorView in Frameworks */ = {isa = PBXBuildFile; productRef = 5D114B072EB3208C00A7C08F /* ActivityIndicatorView */; };
+		5D114B0B2EB320A200A7C08F /* EmailComposer in Frameworks */ = {isa = PBXBuildFile; productRef = 5D114B0A2EB320A200A7C08F /* EmailComposer */; };
+		5D114B0E2EB320DB00A7C08F /* SwiftRater in Frameworks */ = {isa = PBXBuildFile; productRef = 5D114B0D2EB320DB00A7C08F /* SwiftRater */; };
 		5D3871CD2EB1FABB00C657E9 /* SwiftUIIntrospect in Frameworks */ = {isa = PBXBuildFile; productRef = 5D3871CC2EB1FABB00C657E9 /* SwiftUIIntrospect */; };
 		5D3871D02EB1FACB00C657E9 /* SwiftyStoreKit in Frameworks */ = {isa = PBXBuildFile; productRef = 5D3871CF2EB1FACB00C657E9 /* SwiftyStoreKit */; };
 		5D4DA3472E9F9E7100426F54 /* SwifterSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 5D4DA3462E9F9E7100426F54 /* SwifterSwift */; };
@@ -182,8 +185,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5D114B0E2EB320DB00A7C08F /* SwiftRater in Frameworks */,
+				5D114B082EB3208C00A7C08F /* ActivityIndicatorView in Frameworks */,
 				5D3871CD2EB1FABB00C657E9 /* SwiftUIIntrospect in Frameworks */,
 				5D3871D02EB1FACB00C657E9 /* SwiftyStoreKit in Frameworks */,
+				5D114B0B2EB320A200A7C08F /* EmailComposer in Frameworks */,
 				5DB0B31D2EA789DA003962E0 /* GoogleMobileAds in Frameworks */,
 				5D4DA3472E9F9E7100426F54 /* SwifterSwift in Frameworks */,
 			);
@@ -267,6 +273,9 @@
 				5DB0B31C2EA789DA003962E0 /* GoogleMobileAds */,
 				5D3871CC2EB1FABB00C657E9 /* SwiftUIIntrospect */,
 				5D3871CF2EB1FACB00C657E9 /* SwiftyStoreKit */,
+				5D114B072EB3208C00A7C08F /* ActivityIndicatorView */,
+				5D114B0A2EB320A200A7C08F /* EmailComposer */,
+				5D114B0D2EB320DB00A7C08F /* SwiftRater */,
 			);
 			productName = GiaVangVN;
 			productReference = 5D4DA30C2E9F95A300426F54 /* GiaVangVN.app */;
@@ -351,6 +360,9 @@
 				5DB0B31B2EA789DA003962E0 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
 				5D3871CB2EB1FABB00C657E9 /* XCRemoteSwiftPackageReference "swiftui-introspect" */,
 				5D3871CE2EB1FACB00C657E9 /* XCRemoteSwiftPackageReference "SwiftyStoreKit" */,
+				5D114B062EB3208C00A7C08F /* XCRemoteSwiftPackageReference "ActivityIndicatorView" */,
+				5D114B092EB320A200A7C08F /* XCRemoteSwiftPackageReference "EmailComposer" */,
+				5D114B0C2EB320DB00A7C08F /* XCRemoteSwiftPackageReference "SwiftRater" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 5D4DA30D2E9F95A300426F54 /* Products */;
@@ -810,6 +822,30 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		5D114B062EB3208C00A7C08F /* XCRemoteSwiftPackageReference "ActivityIndicatorView" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/exyte/ActivityIndicatorView";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.2.1;
+			};
+		};
+		5D114B092EB320A200A7C08F /* XCRemoteSwiftPackageReference "EmailComposer" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/gabrieltheodoropoulos/EmailComposer";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.2;
+			};
+		};
+		5D114B0C2EB320DB00A7C08F /* XCRemoteSwiftPackageReference "SwiftRater" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/takecian/SwiftRater";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.2.3;
+			};
+		};
 		5D3871CB2EB1FABB00C657E9 /* XCRemoteSwiftPackageReference "swiftui-introspect" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/siteline/swiftui-introspect";
@@ -845,6 +881,21 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		5D114B072EB3208C00A7C08F /* ActivityIndicatorView */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5D114B062EB3208C00A7C08F /* XCRemoteSwiftPackageReference "ActivityIndicatorView" */;
+			productName = ActivityIndicatorView;
+		};
+		5D114B0A2EB320A200A7C08F /* EmailComposer */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5D114B092EB320A200A7C08F /* XCRemoteSwiftPackageReference "EmailComposer" */;
+			productName = EmailComposer;
+		};
+		5D114B0D2EB320DB00A7C08F /* SwiftRater */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5D114B0C2EB320DB00A7C08F /* XCRemoteSwiftPackageReference "SwiftRater" */;
+			productName = SwiftRater;
+		};
 		5D3871CC2EB1FABB00C657E9 /* SwiftUIIntrospect */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 5D3871CB2EB1FABB00C657E9 /* XCRemoteSwiftPackageReference "swiftui-introspect" */;
