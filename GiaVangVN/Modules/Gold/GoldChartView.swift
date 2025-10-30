@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Charts
+import UIKit
 
 struct GoldChartView: View {
 
@@ -34,126 +35,142 @@ struct GoldChartView: View {
                 buildEmptyState()
             } else {
                 let (minPrice, maxPrice) = calculatePriceRange(from: chartData)
+                let chartWidth = calculateChartWidth(dataPointCount: chartData.count)
+                let needsScrolling = chartData.count > 50 // Threshold for scrolling
 
-                Chart {
-                    // Buy price line
-                    ForEach(chartData) { item in
-                        LineMark(
-                            x: .value("Ngày", item.date),
-                            y: .value("Mua vào", item.buyPrice),
-                            series: .value("Mua vào", "Mua vào")
-                        )
-                        .foregroundStyle(.green)
-                        .symbol {
-                            Circle()
-                                .fill(.green)
-                                .frame(width: 4, height: 4)
-                        }
-                        .lineStyle(StrokeStyle(lineWidth: 2))
-                        .interpolationMethod(.catmullRom)
-                    }
-
-                    // Sell price line
-                    ForEach(chartData) { item in
-                        LineMark(
-                            x: .value("Ngày", item.date),
-                            y: .value("Bán ra", item.sellPrice),
-                            series: .value("Bán ra", "Bán ra")
-                        )
-                        .foregroundStyle(.red)
-                        .symbol {
-                            Circle()
-                                .fill(.red)
-                                .frame(width: 4, height: 4)
-                        }
-                        .lineStyle(StrokeStyle(lineWidth: 2))
-                        .interpolationMethod(.catmullRom)
-                    }
-                }
-                .chartXAxis {
-                    AxisMarks(preset: .aligned, values: .stride(by: .day, count: chartData.count / 4)) { value in
-                        if let dateString = value.as(String.self) {
-                            AxisValueLabel {
-                                Text(dateString)
-                                    .font(.system(size: 10))
-                                    .lineLimit(1)
-                                    .minimumScaleFactor(0.8)
-                            }
-                            AxisTick()
-                            AxisGridLine()
-                        }
-                    }
-                }
-                .chartYAxis {
-                    AxisMarks(position: .leading) { value in
-                        if let price = value.as(Double.self), price > 0 {
-                            AxisValueLabel {
-                                Text(formatPrice(price))
-                                    .font(.caption2)
-                            }
-                            AxisGridLine()
-                        }
-                    }
-                }
-                .chartYScale(domain: minPrice...maxPrice)
-                .chartOverlay { proxy in
+                if needsScrolling {
+                    // Scrollable chart for large datasets
                     GeometryReader { geometry in
-                        Rectangle()
-                            .fill(.clear)
-                            .contentShape(Rectangle())
-                            .gesture(
-                                DragGesture(minimumDistance: 0)
-                                    .onChanged { value in
-                                        let location = value.location
-                                        if let date: String = proxy.value(atX: location.x) {
-                                            selectedDate = date
-                                        }
-                                    }
-                                    .onEnded { _ in
-                                        // Keep selection visible for a moment
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                                            selectedDate = nil
-                                        }
-                                    }
+                        ScrollView(.horizontal, showsIndicators: true) {
+                            buildChart(
+                                chartData: chartData,
+                                minPrice: minPrice,
+                                maxPrice: maxPrice,
+                                width: chartWidth
                             )
-
-                        // Show price popup if date is selected
-                        if let selectedDate = selectedDate,
-                           let dataPoint = chartData.first(where: { $0.date == selectedDate }) {
-
-                            let dateX = proxy.position(forX: selectedDate) ?? 0
-
-                            GoldPricePopupView(dataPoint: dataPoint)
-                                .position(x: dateX, y: geometry.size.height / 4)
+                            .frame(width: chartWidth)
                         }
+                        .scrollIndicators(.visible)
+                    }
+                    .frame(height: 320)
+                    .padding(.bottom, 8)
+                } else {
+                    // Full-width chart for small datasets
+                    buildChart(
+                        chartData: chartData,
+                        minPrice: minPrice,
+                        maxPrice: maxPrice,
+                        width: 0 // Will use maxWidth infinity
+                    )
+                    .frame(height: 320)
+                    .padding(.bottom, 8)
+                }
+
+                // Legend - outside scroll view, always visible
+                HStack(spacing: 20) {
+                    HStack(spacing: 4) {
+                        Circle()
+                            .fill(.green)
+                            .frame(width: 8, height: 8)
+                        Text("Mua vào")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+
+                    HStack(spacing: 4) {
+                        Circle()
+                            .fill(.red)
+                            .frame(width: 8, height: 8)
+                        Text("Bán ra")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
                     }
                 }
-                .chartLegend(position: .bottom, spacing: 8) {
-                    HStack(spacing: 20) {
-                        HStack(spacing: 4) {
-                            Circle()
-                                .fill(.green)
-                                .frame(width: 8, height: 8)
-                            Text("Mua vào")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-
-                        HStack(spacing: 4) {
-                            Circle()
-                                .fill(.red)
-                                .frame(width: 8, height: 8)
-                            Text("Bán ra")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                    }
-                }
-                .frame(height: 300)
+                .frame(maxWidth: .infinity)
                 .padding(.horizontal)
-                .padding(.bottom, 8)
             }
         }
+    }
+
+    @ViewBuilder
+    private func buildChart(chartData: [GoldChartDataPoint], minPrice: Double, maxPrice: Double, width: CGFloat) -> some View {
+        Chart {
+            // Buy price line
+            ForEach(chartData) { item in
+                LineMark(
+                    x: .value("Ngày", item.date),
+                    y: .value("Mua vào", item.buyPrice),
+                    series: .value("Mua vào", "Mua vào")
+                )
+                .foregroundStyle(.green)
+                .symbol {
+                    Circle()
+                        .fill(.green)
+                        .frame(width: 4, height: 4)
+                }
+                .lineStyle(StrokeStyle(lineWidth: 2))
+                .interpolationMethod(.catmullRom)
+            }
+
+            // Sell price line
+            ForEach(chartData) { item in
+                LineMark(
+                    x: .value("Ngày", item.date),
+                    y: .value("Bán ra", item.sellPrice),
+                    series: .value("Bán ra", "Bán ra")
+                )
+                .foregroundStyle(.red)
+                .symbol {
+                    Circle()
+                        .fill(.red)
+                        .frame(width: 4, height: 4)
+                }
+                .lineStyle(StrokeStyle(lineWidth: 2))
+                .interpolationMethod(.catmullRom)
+            }
+        }
+        .chartXAxis {
+            AxisMarks(preset: .aligned, values: .stride(by: .day, count: calculateXAxisStride(dataPointCount: chartData.count))) { value in
+                if let dateString = value.as(String.self) {
+                    AxisValueLabel {
+                        VStack(spacing: 2) {
+                            // Day
+                            Text(extractDay(from: dateString))
+                                .font(.system(size: 10, weight: .semibold))
+                                .foregroundColor(.primary)
+
+                            // Month
+                            Text(extractMonth(from: dateString))
+                                .font(.system(size: 8))
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    AxisTick()
+                    AxisGridLine()
+                }
+            }
+        }
+        .chartYAxis {
+            AxisMarks(position: .leading) { value in
+                if let price = value.as(Double.self), price > 0 {
+                    AxisValueLabel {
+                        Text(formatPrice(price))
+                            .font(.caption2)
+                    }
+                    AxisGridLine()
+                }
+            }
+        }
+        .chartYScale(domain: minPrice...maxPrice)
+        .chartOverlay { proxy in
+            // Overlay interactions commented out for better scrolling experience
+            // Can be re-enabled if needed
+        }
+        .animation(.easeInOut(duration: 0.5), value: chartData.count)
+        .transition(.opacity)
+        .frame(maxWidth: width > 0 ? nil : .infinity, maxHeight: .infinity)
+        .frame(height: 300)
+        .padding(.horizontal)
     }
 
     @ViewBuilder
@@ -171,6 +188,33 @@ struct GoldChartView: View {
     }
 
     // MARK: - Helper Methods
+
+    private func calculateChartWidth(dataPointCount: Int) -> CGFloat {
+        // Only called for large datasets that need scrolling
+        // Allocate comfortable space per data point for readable charts
+        let pixelsPerPoint: CGFloat = 20 // Pixels per data point for scrollable charts
+        let calculatedWidth = CGFloat(dataPointCount) * pixelsPerPoint
+
+        // Ensure minimum width is at least screen width
+        let minWidth: CGFloat = UIScreen.main.bounds.width
+        return max(minWidth, calculatedWidth)
+    }
+
+    private func calculateXAxisStride(dataPointCount: Int) -> Int {
+        // Calculate appropriate stride for X-axis labels based on data count
+        switch dataPointCount {
+        case 0...10:
+            return 1 // Show every label
+        case 11...30:
+            return max(1, dataPointCount / 6) // ~6 labels
+        case 31...90:
+            return max(1, dataPointCount / 8) // ~8 labels
+        case 91...180:
+            return max(1, dataPointCount / 10) // ~10 labels
+        default:
+            return max(1, dataPointCount / 12) // ~12 labels for 365 days
+        }
+    }
 
     private func prepareChartData(from items: [GoldListItem]) -> [GoldChartDataPoint] {
         var chartData: [GoldChartDataPoint] = []
@@ -255,6 +299,25 @@ struct GoldChartView: View {
         } else {
             return formatter.string(from: NSNumber(value: price)) ?? "\(Int(price))"
         }
+    }
+
+    private func extractDay(from dateString: String) -> String {
+        // Input: "16/10" -> Output: "16"
+        let components = dateString.split(separator: "/")
+        if components.count >= 1 {
+            return String(components[0])
+        }
+        return dateString
+    }
+
+    private func extractMonth(from dateString: String) -> String {
+        // Input: "16/10" -> Output: "Th10" (Tháng 10)
+        let components = dateString.split(separator: "/")
+        if components.count >= 2 {
+            let monthNum = String(components[1])
+            return "T\(monthNum)"
+        }
+        return ""
     }
 }
 
