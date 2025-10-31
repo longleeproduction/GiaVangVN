@@ -41,6 +41,7 @@ class GoldService {
 
     /// Debug helper to print response details
     private func debugPrintResponse(_ response: HTTPURLResponse, data: Data, decodedObject: Any? = nil) {
+        return;
         print("\n🔵 [GoldService] ========== RESPONSE ==========")
         print("URL: \(response.url?.absoluteString ?? "N/A")")
         print("Status Code: \(response.statusCode)")

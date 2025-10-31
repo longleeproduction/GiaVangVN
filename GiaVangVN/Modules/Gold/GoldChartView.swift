@@ -39,20 +39,32 @@ struct GoldChartView: View {
                 let needsScrolling = chartData.count > 50 // Threshold for scrolling
 
                 if needsScrolling {
-                    // Scrollable chart for large datasets
+                    // Scrollable chart for large datasets with fixed Y-axis
                     GeometryReader { geometry in
-                        ScrollView(.horizontal, showsIndicators: true) {
-                            buildChart(
+                        HStack(spacing: 0) {
+                            // Fixed Y-axis on the left
+                            buildYAxisOnly(
                                 chartData: chartData,
                                 minPrice: minPrice,
-                                maxPrice: maxPrice,
-                                width: chartWidth
+                                maxPrice: maxPrice
                             )
-                            .frame(width: chartWidth)
+                            .frame(width: 50)
+
+                            // Scrollable chart content without Y-axis
+                            ScrollView(.horizontal, showsIndicators: true) {
+                                buildChart(
+                                    chartData: chartData,
+                                    minPrice: minPrice,
+                                    maxPrice: maxPrice,
+                                    width: chartWidth,
+                                    showYAxis: false
+                                )
+                                .frame(width: chartWidth)
+                            }
+                            .scrollIndicators(.visible)
                         }
-                        .scrollIndicators(.visible)
                     }
-                    .frame(height: 320)
+                    .frame(height: 240)
                     .padding(.bottom, 8)
                 } else {
                     // Full-width chart for small datasets
@@ -60,9 +72,10 @@ struct GoldChartView: View {
                         chartData: chartData,
                         minPrice: minPrice,
                         maxPrice: maxPrice,
-                        width: 0 // Will use maxWidth infinity
+                        width: 0, // Will use maxWidth infinity
+                        showYAxis: true
                     )
-                    .frame(height: 320)
+                    .frame(height: 240)
                     .padding(.bottom, 8)
                 }
 
@@ -93,7 +106,7 @@ struct GoldChartView: View {
     }
 
     @ViewBuilder
-    private func buildChart(chartData: [GoldChartDataPoint], minPrice: Double, maxPrice: Double, width: CGFloat) -> some View {
+    private func buildChart(chartData: [GoldChartDataPoint], minPrice: Double, maxPrice: Double, width: CGFloat, showYAxis: Bool = true) -> some View {
         Chart {
             // Buy price line
             ForEach(chartData) { item in
@@ -130,7 +143,7 @@ struct GoldChartView: View {
             }
         }
         .chartXAxis {
-            AxisMarks(preset: .aligned, values: .stride(by: .day, count: calculateXAxisStride(dataPointCount: chartData.count))) { value in
+            AxisMarks(preset: .aligned) { value in
                 if let dateString = value.as(String.self) {
                     AxisValueLabel {
                         VStack(spacing: 2) {
@@ -151,13 +164,15 @@ struct GoldChartView: View {
             }
         }
         .chartYAxis {
-            AxisMarks(position: .leading) { value in
-                if let price = value.as(Double.self), price > 0 {
-                    AxisValueLabel {
-                        Text(formatPrice(price))
-                            .font(.caption2)
+            if showYAxis {
+                AxisMarks(position: .leading) { value in
+                    if let price = value.as(Double.self), price > 0 {
+                        AxisValueLabel {
+                            Text(formatPrice(price))
+                                .font(.caption2)
+                        }
+                        AxisGridLine()
                     }
-                    AxisGridLine()
                 }
             }
         }
@@ -171,6 +186,34 @@ struct GoldChartView: View {
         .frame(maxWidth: width > 0 ? nil : .infinity, maxHeight: .infinity)
         .frame(height: 300)
         .padding(.horizontal)
+    }
+
+    @ViewBuilder
+    private func buildYAxisOnly(chartData: [GoldChartDataPoint], minPrice: Double, maxPrice: Double) -> some View {
+        // Create a minimal chart just to display the Y-axis
+        Chart {
+            // Add a single invisible data point to establish the scale
+            if let firstPoint = chartData.first {
+                LineMark(
+                    x: .value("", ""),
+                    y: .value("", firstPoint.buyPrice)
+                )
+                .foregroundStyle(.clear)
+            }
+        }
+        .chartXAxis(.hidden)
+        .chartYAxis {
+            AxisMarks(position: .leading) { value in
+                if let price = value.as(Double.self), price > 0 {
+                    AxisValueLabel {
+                        Text(formatPrice(price))
+                            .font(.caption2)
+                    }
+                }
+            }
+        }
+        .chartYScale(domain: minPrice...maxPrice)
+        .frame(height: 300)
     }
 
     @ViewBuilder
