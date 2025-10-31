@@ -28,7 +28,7 @@ struct MarketView: View {
                     
                     MarketCurrencyView()
                         .tag(MarketViewModel.MarketTab.Currency)
-                }.tabViewStyle(.page)
+                }.tabViewStyle(.page(indexDisplayMode: .never))
                 
             }.frame(maxWidth: .infinity, maxHeight: .infinity)
                 .navigationTitle("Thị trường")

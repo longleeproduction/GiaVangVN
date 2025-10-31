@@ -8,39 +8,42 @@
 import Combine
 import Foundation
 
-class GoldMarketModel: Identifiable, Equatable {
+class GoldMarketModel: Identifiable, Equatable, ObservableObject {
     static func == (lhs: GoldMarketModel, rhs: GoldMarketModel) -> Bool {
         return lhs.id == rhs.id
     }
-    
+
     var id: String = UUID().uuidString
-    
+
     var branch: GoldBranch
     var city: String
     var product: String
-    
-    var data7Day: GoldListData? = nil
-    
+
+    @Published var data7Day: GoldListData? = nil
+
     init(branch: GoldBranch, city: String, product: String) {
         self.branch = branch
         self.city = city
         self.product = product
     }
-    
+
 }
 
 class MarketViewModel: ObservableObject {
-    
+
     enum MarketTab {
         case Gold
         case Currency
     }
-    
-    
+
+
     @Published var selectedTab: MarketTab = .Gold
-    
+
     @Published var currentGoldMarket: GoldMarketModel?
-    
+
+    @Published var isPreloading: Bool = false
+    @Published var preloadProgress: Double = 0.0
+
     // Hardcode list golds
     @Published var listGoldMarkets: [GoldMarketModel] = [
         GoldMarketModel(branch: .sjc, city: "Toàn quốc", product: "Vàng miếng SJC"),
@@ -73,5 +76,88 @@ class MarketViewModel: ObservableObject {
     
     init() {
         currentGoldMarket = listGoldMarkets.first
-    }    
+        // Start preloading 7-day data for all markets
+        preloadAllMarketData()
+    }
+
+    /// Preload 7-day data for all gold markets concurrently for high performance
+    func preloadAllMarketData() {
+        isPreloading = true
+        preloadProgress = 0.0
+
+        Task {
+            let totalMarkets = listGoldMarkets.count
+
+            // Use TaskGroup for concurrent fetching
+            await withTaskGroup(of: (Int, GoldListData?).self) { group in
+                // Launch concurrent tasks for each market
+                for (index, market) in listGoldMarkets.enumerated() {
+                    group.addTask {
+                        do {
+                            let request = await GoldListRequest(
+                                city: market.city,
+                                product: market.product,
+                                branch: market.branch.rawValue,
+                                range: ListRange.Range7d.rawValue  // 7-day data
+                            )
+                            let response = try await GoldService.shared.fetchGoldListByRange(request: request)
+                            return (index, response.data)
+                        } catch {
+                            debugPrint("ERROR preloading market \(market.product) - \(market.branch.title): \(error)")
+                            return (index, nil)
+                        }
+                    }
+                }
+
+                // Collect results as they complete
+                var completedCount = 0
+                for await (index, data) in group {
+                    completedCount += 1
+
+                    // Update the market data on main thread
+                    await MainActor.run {
+                        if index < listGoldMarkets.count {
+                            listGoldMarkets[index].data7Day = data
+                            // Manually trigger update to ensure UI refreshes
+                            objectWillChange.send()
+                        }
+                        // Update progress
+                        preloadProgress = Double(completedCount) / Double(totalMarkets)
+                    }
+                }
+            }
+
+            // Mark preloading as complete
+            await MainActor.run {
+                isPreloading = false
+                preloadProgress = 1.0
+                debugPrint("✅ Preloading completed for \(totalMarkets) markets")
+            }
+        }
+    }
+
+    /// Refresh data for a specific market
+    func refreshMarket(_ market: GoldMarketModel) {
+        Task {
+            do {
+                let request = GoldListRequest(
+                    city: market.city,
+                    product: market.product,
+                    branch: market.branch.rawValue,
+                    range: ListRange.Range7d.rawValue
+                )
+                let response = try await GoldService.shared.fetchGoldListByRange(request: request)
+
+                await MainActor.run {
+                    if let index = listGoldMarkets.firstIndex(where: { $0.id == market.id }) {
+                        listGoldMarkets[index].data7Day = response.data
+                        // Manually trigger update to ensure UI refreshes
+                        objectWillChange.send()
+                    }
+                }
+            } catch {
+                debugPrint("ERROR refreshing market: \(error)")
+            }
+        }
+    }
 }

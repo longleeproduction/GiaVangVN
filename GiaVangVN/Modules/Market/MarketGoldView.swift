@@ -13,95 +13,123 @@ struct MarketGoldView: View {
     
     @StateObject var goldViewModel = GoldDetailViewModel()
     
+    @State private var scrollProxy: ScrollViewProxy?
+    
     var body: some View {
-        ScrollView(showsIndicators: false) {
-            VStack {
-                // Price in - out
-                if goldViewModel.isLoading {
-                    // Show loading placeholders
-                    priceLoadingView(title: "Mua vào")
-                    priceLoadingView(title: "Bán ra")
-                } else if let latestData = goldViewModel.goldData?.list.first {
-                    priceView(
-                        title: "Mua vào",
-                        price: ApiDecryptor.decrypt(latestData.buyDisplay),
-                        percent: ApiDecryptor.decrypt(latestData.buyPercent),
-                        delta: ApiDecryptor.decrypt(latestData.buyDelta)
-                    )
-                    .transition(.opacity.combined(with: .move(edge: .top)))
+        VStack(spacing: 0) {
+            // Preloading progress indicator
+            if viewModel.isPreloading {
+                PreloadingProgressView(progress: viewModel.preloadProgress)
+                    .transition(.opacity)
+            }
+            ScrollViewReader { scrollProxy in
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: 0) {
+                        Color.clear
+                            .frame(height: 1)
+                            .id("scrollTop")
 
-                    priceView(
-                        title: "Bán ra",
-                        price: ApiDecryptor.decrypt(latestData.sellDisplay),
-                        percent: ApiDecryptor.decrypt(latestData.sellPercent),
-                        delta: ApiDecryptor.decrypt(latestData.sellDelta)
-                    )
-                    .transition(.opacity.combined(with: .move(edge: .top)))
-                } else {
-                    // Placeholder when no data
-                    priceView(title: "Mua vào", price: "--", percent: "0%", delta: "0")
-                    priceView(title: "Bán ra", price: "--", percent: "0%", delta: "0")
-                }
-                
-                // Biểu đồ
-                VStack {
-                    HStack {
-                        ForEach(ListRange.allCases, id: \.self) { item in
-                            MarketRangeItemView(range: item, isSelected: goldViewModel.range == item)
-                                .onTapGesture {
-                                    goldViewModel.range = item
-                                    refreshData()
+                        VStack(spacing: 16) {
+                            // Price in - out
+                            if goldViewModel.isLoading {
+                                // Show loading placeholders
+                                priceLoadingView(title: "Mua vào")
+                                priceLoadingView(title: "Bán ra")
+                            } else if let latestData = goldViewModel.goldData?.list.first {
+                                priceView(
+                                    title: "Mua vào",
+                                    price: ApiDecryptor.decrypt(latestData.buyDisplay),
+                                    percent: ApiDecryptor.decrypt(latestData.buyPercent),
+                                    delta: ApiDecryptor.decrypt(latestData.buyDelta)
+                                )
+                                .transition(.opacity.combined(with: .move(edge: .top)))
+
+                                priceView(
+                                    title: "Bán ra",
+                                    price: ApiDecryptor.decrypt(latestData.sellDisplay),
+                                    percent: ApiDecryptor.decrypt(latestData.sellPercent),
+                                    delta: ApiDecryptor.decrypt(latestData.sellDelta)
+                                )
+                                .transition(.opacity.combined(with: .move(edge: .top)))
+                            } else {
+                                // Placeholder when no data
+                                priceView(title: "Mua vào", price: "--", percent: "0%", delta: "0")
+                                priceView(title: "Bán ra", price: "--", percent: "0%", delta: "0")
+                            }
+
+                            // Biểu đồ
+                            VStack {
+                                HStack {
+                                    ForEach(ListRange.allCases, id: \.self) { item in
+                                        MarketRangeItemView(range: item, isSelected: goldViewModel.range == item)
+                                            .onTapGesture {
+                                                goldViewModel.range = item
+                                                refreshData()
+                                            }
+                                    }
+                                    Spacer()
+                                }.frame(maxWidth: 500)
+
+                                if goldViewModel.isLoading {
+                                    VStack(spacing: 12) {
+                                        ProgressView()
+                                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                            .scaleEffect(1.2)
+
+                                        Text("Đang tải dữ liệu...")
+                                            .font(.caption)
+                                            .foregroundColor(.white.opacity(0.7))
+                                    }
+                                    .frame(maxWidth: .infinity)
+                                    .frame(height: 300)
+                                    .transition(.opacity)
                                 }
-                        }
-                        //goldViewModel.range
-                    }.frame(maxWidth: 500)
-                    
-                    if goldViewModel.isLoading {
-                        VStack(spacing: 12) {
-                            ProgressView()
-                                .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                                .scaleEffect(1.2)
 
-                            Text("Đang tải dữ liệu...")
-                                .font(.caption)
-                                .foregroundColor(.white.opacity(0.7))
-                        }
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 300)
-                        .transition(.opacity)
+                                if let data = goldViewModel.goldData, !goldViewModel.isLoading {
+                                    GoldChartView(data: data)
+                                        .transition(.opacity.combined(with: .scale(scale: 0.95)))
+                                        .animation(.easeInOut(duration: 0.4), value: goldViewModel.goldData?.list.count)
+                                }
+                            }
+                            .frame(maxWidth: .infinity)
+
+                            // List branch
+                            VStack(spacing: 0) {
+                                ForEach(viewModel.listGoldMarkets, id: \.id) { item in
+                                    Button {
+                                        viewModel.currentGoldMarket = item
+                                        refreshData()
+                                    } label: {
+                                        MarketGoldItemView(item: item, isSelected: viewModel.currentGoldMarket == item)
+                                    }
+                                }
+                            }
+                        } // End inner VStack with spacing
                     }
-                    
-                    if let data = goldViewModel.goldData, !goldViewModel.isLoading {
-                        GoldChartView(data: data)
-                            .transition(.opacity.combined(with: .scale(scale: 0.95)))
-                            .animation(.easeInOut(duration: 0.4), value: goldViewModel.goldData?.list.count)
-                    }
-                }.frame(maxHeight: 400)
-                    .frame(maxWidth: .infinity)
-                
-                // List branch
-                
-                VStack(spacing: 0) {
-                    ForEach(viewModel.listGoldMarkets, id: \.id) { item in
-                        Button {
-                            viewModel.currentGoldMarket = item
-                            refreshData()
-                        } label: {
-                            MarketGoldItemView(item: item, isSelected: viewModel.currentGoldMarket == item)
-                        }
-                    }
+                    .padding(.horizontal, 16)
+                    .padding(.top, 8)
                 }
-            }.padding(.horizontal, 16)
-        }.task {
-            if let item = viewModel.currentGoldMarket {
-                goldViewModel.getGoldDetail(product: item.product, branch: item.branch, city: item.city)
+                .onAppear {
+                    self.scrollProxy = scrollProxy
+                }
+            }.task {
+                if let item = viewModel.currentGoldMarket {
+                    goldViewModel.getGoldDetail(product: item.product, branch: item.branch, city: item.city)
+                }
             }
         }
-        
+        .animation(.easeInOut, value: viewModel.isPreloading)
     }
     
     private func refreshData() {
         guard let item = viewModel.currentGoldMarket else { return }
+
+        // Scroll to top with animation
+        withAnimation(.easeInOut(duration: 0.3)) {
+            self.scrollProxy?.scrollTo("scrollTop", anchor: .top)
+        }
+
+        // Fetch new data
         goldViewModel.getGoldDetail(product: item.product, branch: item.branch, city: item.city)
     }
     
@@ -164,7 +192,7 @@ struct MarketGoldView: View {
                     }
                 }
             }
-        }
+        }.frame(maxWidth: .infinity, alignment: .leading)
         .animation(.easeInOut(duration: 0.3), value: price)
     }
 }
@@ -189,8 +217,9 @@ struct MarketRangeItemView : View {
 }
 
 struct MarketGoldItemView: View {
-    var item: GoldMarketModel
+    @ObservedObject var item: GoldMarketModel
     var isSelected: Bool
+    @State private var justLoaded: Bool = false
 
     var body: some View {
         HStack {
@@ -212,20 +241,155 @@ struct MarketGoldItemView: View {
                 .frame(minHeight: 43)
                 .padding(.vertical, 10)
 
-            // Price
+            // Price - Display actual data if available
+            Group {
+                if let latestData = item.data7Day?.list.first {
+                    priceDisplay(
+                        price: ApiDecryptor.decrypt(latestData.sellDisplay),
+                        percent: ApiDecryptor.decrypt(latestData.sellPercent),
+                        delta: ApiDecryptor.decrypt(latestData.sellDelta)
+                    )
+                    .transition(.asymmetric(
+                        insertion: .opacity.combined(with: .scale(scale: 0.9)),
+                        removal: .opacity
+                    ))
+                    .id("price-\(latestData.dateUpdate)") // Force refresh on data change
+                } else {
+                    // Loading placeholder
+                    priceLoadingPlaceholder()
+                        .transition(.opacity)
+                }
+            }
+            .animation(.easeInOut(duration: 0.3), value: item.data7Day != nil)
+        }
+        .padding(.horizontal, 10)
+        .background(
+            Group {
+                if isSelected {
+                    Color.white.opacity(0.1)
+                } else if justLoaded {
+                    Color(hex: "7FDF9A").opacity(0.15)
+                } else {
+                    Color.clear
+                }
+            }
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .onChange(of: item.data7Day != nil) { hasData in
+            if hasData && !justLoaded {
+                // Trigger brief highlight animation when data loads
+                withAnimation(.easeInOut(duration: 0.4)) {
+                    justLoaded = true
+                }
 
-            VStack(alignment: .trailing) {
-                Text("21,98")
-                    .font(.footnote)
-                    .fontWeight(.semibold)
+                // Remove highlight after delay
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+                    withAnimation(.easeOut(duration: 0.4)) {
+                        justLoaded = false
+                    }
+                }
+            }
+        }
+    }
 
-                Text("+1 (+0,53%)")
-                    .foregroundStyle(.green)
+    @ViewBuilder
+    private func priceDisplay(price: String, percent: String, delta: String) -> some View {
+        VStack(alignment: .trailing, spacing: 2) {
+            Text(price)
+                .font(.footnote)
+                .fontWeight(.semibold)
+                .foregroundColor(.white)
+
+            // Determine if price went up or down
+            let isPositive = !delta.hasPrefix("-") && delta != "0"
+            let isNegative = delta.hasPrefix("-")
+
+            HStack(spacing: 2) {
+                if isPositive {
+                    Image(systemName: "arrow.up")
+                        .font(.system(size: 8, weight: .bold))
+                        .foregroundColor(Color(hex: "7FDF9A"))
+                } else if isNegative {
+                    Image(systemName: "arrow.down")
+                        .font(.system(size: 8, weight: .bold))
+                        .foregroundColor(.red)
+                }
+
+                Text(percent)
+                    .foregroundStyle(isPositive ? Color(hex: "7FDF9A") : (isNegative ? .red : .gray))
                     .font(.caption)
             }
-        }.padding(.horizontal, 10)
-            .background(isSelected ? Color.white.opacity(0.1) : Color.clear)
-            .clipShape(RoundedRectangle(cornerRadius: 10))
+        }
+    }
+
+    @ViewBuilder
+    private func priceLoadingPlaceholder() -> some View {
+        VStack(alignment: .trailing, spacing: 4) {
+            RoundedRectangle(cornerRadius: 3)
+                .fill(Color.white.opacity(0.15))
+                .frame(width: 60, height: 12)
+                .shimmer()
+
+            RoundedRectangle(cornerRadius: 2)
+                .fill(Color.white.opacity(0.15))
+                .frame(width: 45, height: 10)
+                .shimmer()
+        }
+    }
+}
+
+// MARK: - Preloading Progress View
+struct PreloadingProgressView: View {
+    let progress: Double
+
+    var body: some View {
+        VStack(spacing: 4) {
+            HStack(spacing: 8) {
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle(tint: Color(hex: "7FDF9A")))
+                    .scaleEffect(0.7)
+
+                Text("Đang tải dữ liệu thị trường...")
+                    .font(.caption2)
+                    .foregroundColor(.white.opacity(0.8))
+
+                Spacer()
+
+                Text("\(Int(progress * 100))%")
+                    .font(.caption2)
+                    .foregroundColor(Color(hex: "7FDF9A"))
+                    .fontWeight(.semibold)
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
+
+            // Progress bar
+            GeometryReader { geometry in
+                ZStack(alignment: .leading) {
+                    // Background
+                    Rectangle()
+                        .fill(Color.white.opacity(0.1))
+                        .frame(height: 2)
+
+                    // Progress
+                    Rectangle()
+                        .fill(
+                            LinearGradient(
+                                gradient: Gradient(colors: [
+                                    Color(hex: "7FDF9A"),
+                                    Color(hex: "7FDF9A").opacity(0.7)
+                                ]),
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .frame(width: geometry.size.width * CGFloat(progress), height: 2)
+                        .animation(.easeInOut, value: progress)
+                }
+            }
+            .frame(height: 2)
+        }
+        .background(Color.black.opacity(0.3))
     }
 }
 

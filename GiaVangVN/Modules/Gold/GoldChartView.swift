@@ -64,7 +64,7 @@ struct GoldChartView: View {
                             .scrollIndicators(.visible)
                         }
                     }
-                    .frame(height: 240)
+                    .frame(height: 280)
                     .padding(.bottom, 8)
                 } else {
                     // Full-width chart for small datasets
@@ -75,7 +75,7 @@ struct GoldChartView: View {
                         width: 0, // Will use maxWidth infinity
                         showYAxis: true
                     )
-                    .frame(height: 240)
+                    .frame(height: 280)
                     .padding(.bottom, 8)
                 }
 
