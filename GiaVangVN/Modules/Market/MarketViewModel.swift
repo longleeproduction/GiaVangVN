@@ -12,38 +12,57 @@ class GoldMarketModel: Identifiable, Equatable, ObservableObject {
     static func == (lhs: GoldMarketModel, rhs: GoldMarketModel) -> Bool {
         return lhs.id == rhs.id
     }
-
+    
     var id: String = UUID().uuidString
-
+    
     var branch: GoldBranch
     var city: String
     var product: String
-
+    
     @Published var data7Day: GoldListData? = nil
-
+    @Published var data30Day: GoldListData? = nil
+    @Published var data60Day: GoldListData? = nil
+    @Published var data180Day: GoldListData? = nil
+    @Published var data365Day: GoldListData? = nil
+    
     init(branch: GoldBranch, city: String, product: String) {
         self.branch = branch
         self.city = city
         self.product = product
     }
-
+    
+    func cacheDataForRange(_ range: ListRange, data: GoldListData?) {
+        guard let `data` = data else { return }
+        switch range {
+        case .Range7d:
+            self.data7Day = data
+        case .Range30d:
+            self.data30Day = data
+        case .Range60d:
+            self.data60Day = data
+        case .Range180d:
+            self.data180Day = data
+        case .Range365d:
+            self.data365Day = data
+        }
+    }
 }
 
 class MarketViewModel: ObservableObject {
-
+    
     enum MarketTab {
         case Gold
         case Currency
     }
-
-
+    
+    
     @Published var selectedTab: MarketTab = .Gold
-
+    
     @Published var currentGoldMarket: GoldMarketModel?
-
+    
     @Published var isPreloading: Bool = false
     @Published var preloadProgress: Double = 0.0
-
+    
     // Hardcode list golds
     @Published var listGoldMarkets: [GoldMarketModel] = [
         GoldMarketModel(branch: .sjc, city: "Toàn quốc", product: "Vàng miếng SJC"),
@@ -79,15 +98,15 @@ class MarketViewModel: ObservableObject {
         // Start preloading 7-day data for all markets
         preloadAllMarketData()
     }
-
+    
     /// Preload 7-day data for all gold markets concurrently for high performance
     func preloadAllMarketData() {
         isPreloading = true
         preloadProgress = 0.0
-
+        
         Task {
             let totalMarkets = listGoldMarkets.count
-
+            
             // Use TaskGroup for concurrent fetching
             await withTaskGroup(of: (Int, GoldListData?).self) { group in
                 // Launch concurrent tasks for each market
@@ -108,12 +127,12 @@ class MarketViewModel: ObservableObject {
                         }
                     }
                 }
-
+                
                 // Collect results as they complete
                 var completedCount = 0
                 for await (index, data) in group {
                     completedCount += 1
-
+                    
                     // Update the market data on main thread
                     await MainActor.run {
                         if index < listGoldMarkets.count {
@@ -126,7 +145,7 @@ class MarketViewModel: ObservableObject {
                     }
                 }
             }
-
+            
             // Mark preloading as complete
             await MainActor.run {
                 isPreloading = false
@@ -135,7 +154,7 @@ class MarketViewModel: ObservableObject {
             }
         }
     }
-
+    
     /// Refresh data for a specific market
     func refreshMarket(_ market: GoldMarketModel) {
         Task {
@@ -147,7 +166,7 @@ class MarketViewModel: ObservableObject {
                     range: ListRange.Range7d.rawValue
                 )
                 let response = try await GoldService.shared.fetchGoldListByRange(request: request)
-
+                
                 await MainActor.run {
                     if let index = listGoldMarkets.firstIndex(where: { $0.id == market.id }) {
                         listGoldMarkets[index].data7Day = response.data

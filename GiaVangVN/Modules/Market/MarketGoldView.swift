@@ -129,8 +129,39 @@ struct MarketGoldView: View {
             self.scrollProxy?.scrollTo("scrollTop", anchor: .top)
         }
 
-        // Fetch new data
-        goldViewModel.getGoldDetail(product: item.product, branch: item.branch, city: item.city)
+        // Check cache for selected range
+        switch goldViewModel.range {
+        case .Range7d:
+            if let cachedData = item.data7Day {
+                goldViewModel.goldData = cachedData
+                return
+            }
+        case .Range30d:
+            if let cachedData = item.data30Day {
+                goldViewModel.goldData = cachedData
+                return
+            }
+        case .Range60d:
+            if let cachedData = item.data60Day {
+                goldViewModel.goldData = cachedData
+                return
+            }
+        case .Range180d:
+            if let cachedData = item.data180Day {
+                goldViewModel.goldData = cachedData
+                return
+            }
+        case .Range365d:
+            if let cachedData = item.data365Day {
+                goldViewModel.goldData = cachedData
+                return
+            }
+        }
+
+        // Fetch new data if cache miss
+        goldViewModel.getGoldDetail(product: item.product, branch: item.branch, city: item.city) {
+            item.cacheDataForRange(goldViewModel.range, data: goldViewModel.goldData)
+        }
     }
     
     @ViewBuilder

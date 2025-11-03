@@ -133,7 +133,7 @@ class GoldDetailViewModel: ObservableObject {
     
     @Published var range: ListRange = .Range7d
     
-    func getGoldDetail(product: String, branch: GoldBranch, city: String) {
+    func getGoldDetail(product: String, branch: GoldBranch, city: String, complete: (() -> Void)? = nil)  {
         
         isLoading = true
         Task {
@@ -149,12 +149,14 @@ class GoldDetailViewModel: ObservableObject {
                 
                 await MainActor.run {
                     isLoading = false
+                    complete?()
                 }
             } catch {
                 debugPrint("ERROR ---> GoldViewModel")
                 debugPrint(error)
                 await MainActor.run {
                     isLoading = false
+                    complete?()
                 }
             }
         }
