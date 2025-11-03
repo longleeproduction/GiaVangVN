@@ -47,7 +47,7 @@ struct DashboardGoldListView: View {
 
             // List
             ScrollView {
-                LazyVStack(spacing: 0) {
+                VStack(spacing: 0) {
                     ForEach(data.list) { item in
                         GoldPriceRow(item: item)
 

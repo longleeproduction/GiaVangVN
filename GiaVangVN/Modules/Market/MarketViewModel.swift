@@ -71,8 +71,8 @@ class MarketViewModel: ObservableObject {
         GoldMarketModel(branch: .pnj, city: "TPHCM", product: "PNJ"),
         GoldMarketModel(branch: .pnj, city: "TPHCM", product: "SJC"),
         
-        GoldMarketModel(branch: .doji, city: "Bảng giá tại Hồ Chí Minh", product: "SJC - Bán Lẻ"),
-        GoldMarketModel(branch: .doji, city: "Bảng giá tại Hồ Chí Minh", product: "Nhẫn Tròn 9999 Hưng Thịnh Vượng - Bán Lẻ"),
+        GoldMarketModel(branch: .doji, city: " Bảng giá tại Hồ Chí Minh", product: "SJC - Bán Lẻ"),
+        GoldMarketModel(branch: .doji, city: " Bảng giá tại Hồ Chí Minh", product: "Nhẫn Tròn 9999 Hưng Thịnh Vượng - Bán Lẻ"),
         
         GoldMarketModel(branch: .btmc, city: "Hà Nội", product: "VÀNG MIẾNG VRTL BẢO TÍN MINH CHÂU"),
         GoldMarketModel(branch: .btmc, city: "Hà Nội", product: "VÀNG MIẾNG SJC"),
@@ -84,7 +84,6 @@ class MarketViewModel: ObservableObject {
         
         GoldMarketModel(branch: .btmh, city: "Hà Nội", product: "Vàng miếng SJC (Cty CP BTMH)"),
         GoldMarketModel(branch: .btmh, city: "Hà Nội", product: "Nhẫn ép vỉ Kim Gia Bảo"),
-        GoldMarketModel(branch: .btmh, city: "Hà Nội", product: "Nhẫn ép vỉ Vàng Rồng Thăng Long"),
         
         GoldMarketModel(branch: .phuquy, city: "Hà Nội", product: "Vàng miếng SJC"),
         GoldMarketModel(branch: .phuquy, city: "Hà Nội", product: "Nhẫn tròn Phú Quý 999.9"),
