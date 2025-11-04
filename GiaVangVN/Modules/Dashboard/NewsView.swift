@@ -74,6 +74,7 @@ class NewsViewModel: ObservableObject {
 struct NewsView: View {
     @StateObject private var viewModel = NewsViewModel()
     @StateObject private var bookmarkManager = BookmarkManager.shared
+    @State private var isPresentedSetting: Bool = false
 
     var body: some View {
         NavigationStack {
@@ -93,8 +94,24 @@ struct NewsView: View {
                     bookmarkedNewsView
                 }
             }
-            .navigationTitle("Tin tức")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    AppHeaderView(title: "Tin tức")
+                }
+                
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        isPresentedSetting.toggle()
+                    } label: {
+                        Image(systemName: "gear")
+                    }
+                }
+
+            }
+            .fullScreenCover(isPresented: $isPresentedSetting) {
+                SettingView()
+            }
             .task {
                 await viewModel.refreshData()
             }

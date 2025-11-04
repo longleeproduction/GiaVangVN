@@ -35,43 +35,39 @@ struct MainView: View {
                 .tag(MainTabItem.market)
                 .tabItem {
                     Label("Thị trường", systemImage: "chart.bar.xaxis")
-                        .tint(Color(hex: "FFAC30"))
                 }
             
             GoldView()
                 .tag(MainTabItem.gold)
                 .tabItem {
                     Label("Giá Vàng", systemImage: "chart.bar.xaxis")
-                        .tint(Color(hex: "FFAC30"))
                 }
 
             GoldCalculatorView()
                 .tag(MainTabItem.calculator)
                 .tabItem {
                     Label("Chuyển đổi", systemImage: "function")
-                        .tint(Color(hex: "FFAC30"))
-                }.tint(Color(hex: "FFAC30"))
-
+                }
 
             WalletView()
                 .tag(MainTabItem.wallet)
                 .tabItem {
                     Label("Ví", systemImage: walletIconName)
-                }.tint(Color(hex: "FFAC30"))
+                }
             
             
             NewsView()
                 .tag(MainTabItem.news)
                 .tabItem {
                     Label("Tin tức", systemImage: "newspaper")
-                }.tint(Color(hex: "FFAC30"))
+                }
             
 //            SettingView()
 //                .tag(MainTabItem.settings)
 //                .tabItem {
 //                    Label("Cài đặt", systemImage: "gear")
 //                }.tint(Color(hex: "FFAC30"))
-        }
+        }.tint(Color(hex: "FFAC30"))
         
     }
 }

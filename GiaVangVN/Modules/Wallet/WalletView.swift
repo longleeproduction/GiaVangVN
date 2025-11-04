@@ -62,69 +62,71 @@ struct WalletView: View {
 
     // MARK: - Portfolio Summary Card
     private var portfolioSummaryCard: some View {
-        VStack(spacing: 16) {
+        let isIPad = UIDevice.current.userInterfaceIdiom == .pad
+
+        return VStack(spacing: isIPad ? 24 : 16) {
             // Total Profit/Loss
-            VStack(spacing: 4) {
+            VStack(spacing: isIPad ? 8 : 4) {
                 Text("Tổng Lãi/Lỗ")
-                    .font(.caption)
+                    .font(isIPad ? .body : .caption)
                     .foregroundColor(.secondary)
 
-                HStack(alignment: .firstTextBaseline, spacing: 4) {
+                HStack(alignment: .firstTextBaseline, spacing: isIPad ? 8 : 4) {
                     Text(formatCurrency(viewModel.totalProfitLoss))
-                        .font(.system(size: 32, weight: .bold))
+                        .font(.system(size: isIPad ? 48 : 32, weight: .bold))
                         .foregroundColor(viewModel.totalProfitLoss >= 0 ? .green : .red)
 
                     if viewModel.totalInvestment > 0 {
                         let percent = (viewModel.totalProfitLoss / viewModel.totalInvestment) * 100
                         Text(String(format: "(%.2f%%)", percent))
-                            .font(.headline)
+                            .font(isIPad ? .title2 : .headline)
                             .foregroundColor(viewModel.totalProfitLoss >= 0 ? .green : .red)
                     }
                 }
             }
 
             // Details Grid
-            HStack(spacing: 20) {
-                VStack(spacing: 4) {
+            HStack(spacing: isIPad ? 30 : 20) {
+                VStack(spacing: isIPad ? 8 : 4) {
                     Text("Tổng đầu tư")
-                        .font(.caption)
+                        .font(isIPad ? .body : .caption)
                         .foregroundColor(.secondary)
                     Text(formatCurrencyShort(viewModel.totalInvestment))
-                        .font(.subheadline)
+                        .font(isIPad ? .title3 : .subheadline)
                         .fontWeight(.semibold)
                 }
 
                 Divider()
-                    .frame(height: 30)
+                    .frame(height: isIPad ? 45 : 30)
 
-                VStack(spacing: 4) {
+                VStack(spacing: isIPad ? 8 : 4) {
                     Text("Đã thực hiện")
-                        .font(.caption)
+                        .font(isIPad ? .body : .caption)
                         .foregroundColor(.secondary)
                     Text(formatCurrencyShort(viewModel.realizedProfitLoss))
-                        .font(.subheadline)
+                        .font(isIPad ? .title3 : .subheadline)
                         .fontWeight(.semibold)
                         .foregroundColor(viewModel.realizedProfitLoss >= 0 ? .green : .red)
                 }
 
                 Divider()
-                    .frame(height: 30)
+                    .frame(height: isIPad ? 45 : 30)
 
-                VStack(spacing: 4) {
+                VStack(spacing: isIPad ? 8 : 4) {
                     Text("Chưa thực hiện")
-                        .font(.caption)
+                        .font(isIPad ? .body : .caption)
                         .foregroundColor(.secondary)
                     Text(formatCurrencyShort(viewModel.unrealizedProfitLoss))
-                        .font(.subheadline)
+                        .font(isIPad ? .title3 : .subheadline)
                         .fontWeight(.semibold)
                         .foregroundColor(viewModel.unrealizedProfitLoss >= 0 ? .green : .red)
                 }
             }
         }
-        .padding()
+        .padding(isIPad ? 24 : 16)
         .background(Color(.systemGray6))
-        .cornerRadius(16)
-        .padding()
+        .cornerRadius(isIPad ? 24 : 16)
+        .padding(isIPad ? 24 : 16)
     }
 
     // MARK: - Holdings View

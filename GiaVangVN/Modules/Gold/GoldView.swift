@@ -17,6 +17,7 @@ struct GoldView: View {
     @StateObject private var viewModel = GoldViewModel()
     
     @State private var currentBranch: GoldBranch = GoldBranch.sjc
+    @State private var isPresentedSetting: Bool = false
 
     var body: some View {
         NavigationStack {
@@ -61,9 +62,25 @@ struct GoldView: View {
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
             }
-            .navigationTitle("Giá vàng")
             .navigationBarTitleDisplayMode(.inline)
             .environmentObject(viewModel)
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    AppHeaderView(title: "Giá Vàng")
+                }
+                
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        isPresentedSetting.toggle()
+                    } label: {
+                        Image(systemName: "gear")
+                    }
+                }
+
+            }
+            .fullScreenCover(isPresented: $isPresentedSetting) {
+                SettingView()
+            }
         }
     }
 

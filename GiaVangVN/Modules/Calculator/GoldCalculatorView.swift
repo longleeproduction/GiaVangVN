@@ -15,6 +15,7 @@ struct GoldCalculatorView: View {
     @State private var showingWeightConversion = false
     @State private var showingProductPicker = false
     @State private var showingAddTransaction = false
+    @State private var isPresentedSetting: Bool = false
 
     var body: some View {
         NavigationStack {
@@ -42,8 +43,24 @@ struct GoldCalculatorView: View {
                     WeightConversionView(viewModel: viewModel)
                         .padding(.bottom, 40)
                 }
-                .navigationTitle("Chuyển đổi")
                 .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .principal) {
+                        AppHeaderView(title: "Chuyển đổi")
+                    }
+                    
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button {
+                            isPresentedSetting.toggle()
+                        } label: {
+                            Image(systemName: "gear")
+                        }
+                    }
+
+                }
+                .fullScreenCover(isPresented: $isPresentedSetting) {
+                    SettingView()
+                }
                 .sheet(isPresented: $showingWeightConversion) {
                     WeightConversionView(viewModel: viewModel)
                 }

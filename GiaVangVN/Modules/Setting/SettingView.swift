@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct SettingView: View {
+    
+    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    
     var body: some View {
         NavigationStack {
             VStack {
@@ -33,6 +36,16 @@ struct SettingView: View {
                 }
 
             }.navigationTitle(Text("Settings"))
+                .toolbar {
+                    ToolbarItem(placement: .topBarLeading) {
+                        Button {
+                            presentationMode.wrappedValue.dismiss()
+                        } label: {
+                            Image(systemName: "xmark")
+                        }
+
+                    }
+                }
         }
     }
 }

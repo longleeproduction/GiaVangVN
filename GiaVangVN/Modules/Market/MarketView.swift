@@ -11,6 +11,7 @@ import SwiftUIIntrospect
 struct MarketView: View {
     
     @StateObject private var viewModel = MarketViewModel()
+    @State private var isPresentedSetting: Bool = false
     
     var body: some View {
         NavigationStack {
@@ -36,9 +37,25 @@ struct MarketView: View {
                 }
                 
             }.frame(maxWidth: .infinity, maxHeight: .infinity)
-                .navigationTitle("Thị trường")
                 .navigationBarTitleDisplayMode(.inline)
                 .environmentObject(viewModel)
+                .toolbar {
+                    ToolbarItem(placement: .principal) {
+                        AppHeaderView(title: "Thị trường")
+                    }
+                    
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button {
+                            isPresentedSetting.toggle()
+                        } label: {
+                            Image(systemName: "gear")
+                        }
+                    }
+
+                }
+                .fullScreenCover(isPresented: $isPresentedSetting) {
+                    SettingView()
+                }
         }
     }
 }
