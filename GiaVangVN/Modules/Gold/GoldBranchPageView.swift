@@ -15,8 +15,8 @@ class GoldBranchPageViewModel: ObservableObject {
     @Published var error: String?
 
 
-    func getDailyGold(branch: GoldBranch) {
-        if dailyGold != nil && !isLoading { return }
+    func getDailyGold(branch: GoldBranch, forceRefresh: Bool = false) {
+        if !forceRefresh && dailyGold != nil && !isLoading { return }
 
         isLoading = true
         error = nil
@@ -144,6 +144,9 @@ struct GoldBranchPageView: View {
                     }
                 }
             }
+        }
+        .refreshable {
+            viewModel.getDailyGold(branch: branch, forceRefresh: true)
         }
     }
 
