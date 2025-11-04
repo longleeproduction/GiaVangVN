@@ -50,17 +50,42 @@ struct GoldChartView: View {
                             .frame(width: 50)
 
                             // Scrollable chart content without Y-axis
-                            ScrollView(.horizontal, showsIndicators: true) {
-                                buildChart(
-                                    chartData: chartData,
-                                    minPrice: minPrice,
-                                    maxPrice: maxPrice,
-                                    width: chartWidth,
-                                    showYAxis: false
-                                )
-                                .frame(width: chartWidth)
+                            ScrollViewReader { scrollProxy in
+                                ScrollView(.horizontal, showsIndicators: true) {
+                                    HStack(spacing: 0) {
+                                        buildChart(
+                                            chartData: chartData,
+                                            minPrice: minPrice,
+                                            maxPrice: maxPrice,
+                                            width: chartWidth,
+                                            showYAxis: false
+                                        )
+                                        .frame(width: chartWidth)
+
+                                        // Invisible marker at the end for scrolling
+                                        Color.clear
+                                            .frame(width: 1, height: 1)
+                                            .id("chartEnd")
+                                    }
+                                }
+                                .scrollIndicators(.visible)
+                                .onAppear {
+                                    // Scroll to end on first appearance
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                        withAnimation {
+                                            scrollProxy.scrollTo("chartEnd", anchor: .trailing)
+                                        }
+                                    }
+                                }
+                                .onChange(of: chartData.count) { _ in
+                                    // Scroll to end when data updates
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                        withAnimation {
+                                            scrollProxy.scrollTo("chartEnd", anchor: .trailing)
+                                        }
+                                    }
+                                }
                             }
-                            .scrollIndicators(.visible)
                         }
                     }
                     .frame(height: 280)
