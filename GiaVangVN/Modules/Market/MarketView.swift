@@ -32,6 +32,7 @@ struct MarketView: View {
                 
             }.frame(maxWidth: .infinity, maxHeight: .infinity)
                 .navigationTitle("Thị trường")
+                .navigationBarTitleDisplayMode(.inline)
                 .environmentObject(viewModel)
         }
     }

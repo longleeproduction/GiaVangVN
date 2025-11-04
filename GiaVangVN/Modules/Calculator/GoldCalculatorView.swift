@@ -40,6 +40,9 @@ struct GoldCalculatorView: View {
                 .sheet(isPresented: $showingWeightConversion) {
                     WeightConversionView(viewModel: viewModel)
                 }
+                .onTapGesture {
+                    hideKeyboard()
+                }
             }
         }
     }
@@ -64,7 +67,7 @@ struct GoldCalculatorView: View {
                 .foregroundColor(.gray)
         }
         .padding()
-        .background(Color.white)
+        .background(Color.white.opacity(0.1))
         .cornerRadius(12)
         .padding()
     }
@@ -79,10 +82,11 @@ struct GoldCalculatorView: View {
             HStack(spacing: 12) {
                 TextField("1", text: $viewModel.weight)
                     .keyboardType(.decimalPad)
-                    .font(.system(size: 24, weight: .medium))
+                    .font(.system(size: 30, weight: .medium))
                     .multilineTextAlignment(.center)
                     .padding()
-                    .background(Color.white)
+                    .frame(height: 80)
+                    .background(Color.white.opacity(0.1))
                     .cornerRadius(12)
                 
                 Button(action: {

@@ -114,7 +114,7 @@ struct GoldBranchPageView: View {
                 Divider()
 
                 // List
-                LazyVStack(spacing: 0) {
+                VStack(spacing: 0) {
                     ForEach(data.cities) { city in
                         Section {
                             ForEach(city.list) { item in

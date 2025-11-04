@@ -62,6 +62,7 @@ struct GoldView: View {
                 .tabViewStyle(.page(indexDisplayMode: .never))
             }
             .navigationTitle("Giá vàng")
+            .navigationBarTitleDisplayMode(.inline)
             .environmentObject(viewModel)
         }
     }
@@ -169,7 +170,7 @@ struct GoldListView: View {
 
             // List
             ScrollView {
-                LazyVStack(spacing: 0) {
+                VStack(spacing: 0) {
                     ForEach(data.cities) { city in
                         Section {
                             ForEach(city.list) { item in

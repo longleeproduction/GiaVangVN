@@ -69,6 +69,7 @@ struct MarketGoldView: View {
                                     }
                                     Spacer()
                                 }.frame(maxWidth: 500)
+                                    .padding(.bottom, 10)
 
                                 if goldViewModel.isLoading {
                                     VStack(spacing: 12) {

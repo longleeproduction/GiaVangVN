@@ -25,8 +25,7 @@ struct GoldChartView: View {
                 Text(data.subTitle)
                     .font(.caption)
                     .foregroundColor(.secondary)
-            }
-            .padding(.horizontal)
+            }.padding(.bottom, 8)
 
             // Chart
             let chartData = prepareChartData(from: data.list.reversed())
@@ -100,7 +99,6 @@ struct GoldChartView: View {
                     }
                 }
                 .frame(maxWidth: .infinity)
-                .padding(.horizontal)
             }
         }
     }
@@ -143,8 +141,11 @@ struct GoldChartView: View {
             }
         }
         .chartXAxis {
+            let stride = calculateXAxisStride(dataPointCount: chartData.count)
             AxisMarks(preset: .aligned) { value in
-                if let dateString = value.as(String.self) {
+                if let dateString = value.as(String.self),
+                   let index = chartData.firstIndex(where: { $0.date == dateString }),
+                   index % stride == 0 {
                     AxisValueLabel {
                         VStack(spacing: 2) {
                             // Day
@@ -184,8 +185,6 @@ struct GoldChartView: View {
         .animation(.easeInOut(duration: 0.5), value: chartData.count)
         .transition(.opacity)
         .frame(maxWidth: width > 0 ? nil : .infinity, maxHeight: .infinity)
-        .frame(height: 300)
-        .padding(.horizontal)
     }
 
     @ViewBuilder
@@ -249,13 +248,13 @@ struct GoldChartView: View {
         case 0...10:
             return 1 // Show every label
         case 11...30:
-            return max(1, dataPointCount / 6) // ~6 labels
+            return max(1, dataPointCount / 15) // ~15 labels
         case 31...90:
-            return max(1, dataPointCount / 8) // ~8 labels
+            return max(1, dataPointCount / 30) // ~30 labels
         case 91...180:
-            return max(1, dataPointCount / 10) // ~10 labels
+            return max(1, dataPointCount / 90) // ~90 labels
         default:
-            return max(1, dataPointCount / 12) // ~12 labels for 365 days
+            return max(1, dataPointCount / 180) // ~180 labels for 365 days
         }
     }
 
