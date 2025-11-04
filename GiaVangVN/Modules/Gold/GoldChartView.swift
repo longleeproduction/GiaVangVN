@@ -278,9 +278,9 @@ struct GoldChartView: View {
         case 31...90:
             return max(1, dataPointCount / 30) // ~30 labels
         case 91...180:
-            return max(1, dataPointCount / 90) // ~90 labels
+            return max(1, dataPointCount / 60) // ~90 labels
         default:
-            return max(1, dataPointCount / 180) // ~180 labels for 365 days
+            return max(1, dataPointCount / 120) // ~180 labels for 365 days
         }
     }
 

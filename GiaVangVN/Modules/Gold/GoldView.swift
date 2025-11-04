@@ -288,7 +288,7 @@ struct GoldItemRow: View {
                     .font(.caption2)
                     .foregroundColor(.secondary)
             }
-            .frame(width: 90, alignment: .trailing)
+            .frame(width: 110, alignment: .trailing)
         }
         .padding(10)
         .background(color.opacity(0.08))
