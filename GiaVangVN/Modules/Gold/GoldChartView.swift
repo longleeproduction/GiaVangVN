@@ -28,7 +28,7 @@ struct GoldChartView: View {
             }.padding(.bottom, 8)
 
             // Chart
-            let chartData = prepareChartData(from: data.list.reversed())
+            let chartData = prepareChartData(from: data.list.reversed(), totalCount: data.list.count)
 
             if chartData.isEmpty {
                 buildEmptyState()
@@ -109,7 +109,7 @@ struct GoldChartView: View {
             // Buy price line
             ForEach(chartData) { item in
                 LineMark(
-                    x: .value("Ngày", item.date),
+                    x: .value("Ngày", item.sortKey),
                     y: .value("Mua vào", item.buyPrice),
                     series: .value("Mua vào", "Mua vào")
                 )
@@ -126,7 +126,7 @@ struct GoldChartView: View {
             // Sell price line
             ForEach(chartData) { item in
                 LineMark(
-                    x: .value("Ngày", item.date),
+                    x: .value("Ngày", item.sortKey),
                     y: .value("Bán ra", item.sellPrice),
                     series: .value("Bán ra", "Bán ra")
                 )
@@ -143,18 +143,19 @@ struct GoldChartView: View {
         .chartXAxis {
             let stride = calculateXAxisStride(dataPointCount: chartData.count)
             AxisMarks(preset: .aligned) { value in
-                if let dateString = value.as(String.self),
-                   let index = chartData.firstIndex(where: { $0.date == dateString }),
+                if let sortKey = value.as(String.self),
+                   let index = chartData.firstIndex(where: { $0.sortKey == sortKey }),
                    index % stride == 0 {
+                    let displayDate = chartData[index].date
                     AxisValueLabel {
                         VStack(spacing: 2) {
                             // Day
-                            Text(extractDay(from: dateString))
+                            Text(extractDay(from: displayDate))
                                 .font(.system(size: 10, weight: .semibold))
                                 .foregroundColor(.primary)
 
                             // Month
-                            Text(extractMonth(from: dateString))
+                            Text(extractMonth(from: displayDate))
                                 .font(.system(size: 8))
                                 .foregroundColor(.secondary)
                         }
@@ -258,8 +259,9 @@ struct GoldChartView: View {
         }
     }
 
-    private func prepareChartData(from items: [GoldListItem]) -> [GoldChartDataPoint] {
+    private func prepareChartData(from items: [GoldListItem], totalCount: Int) -> [GoldChartDataPoint] {
         var chartData: [GoldChartDataPoint] = []
+        let includeYear = totalCount > 90 // Include year for ranges > 90 days
 
         for item in items {
             // Decrypt buy and sell prices
@@ -273,12 +275,16 @@ struct GoldChartView: View {
                 continue
             }
 
+            // Create unique sort key from dateUpdate (includes full timestamp)
+            let sortKey = createSortKey(from: item.dateUpdate)
+
             // Format date for display
-            let displayDate = formatDateForChart(item.dateUpdate)
+            let displayDate = formatDateForChart(item.dateUpdate, includeYear: includeYear)
 
             let dataPoint = GoldChartDataPoint(
                 id: item.id,
                 date: displayDate,
+                sortKey: sortKey,
                 buyPrice: buyPrice,
                 sellPrice: sellPrice,
                 dateUpdate: item.dateUpdate
@@ -289,6 +295,23 @@ struct GoldChartView: View {
 
         // Already reversed, so this is oldest to newest
         return chartData
+    }
+
+    private func createSortKey(from dateString: String) -> String {
+        // Input: "09:01:00 16/10/2025"
+        // Output: "2025-10-16 09:01:00" for proper sorting
+        let components = dateString.split(separator: " ")
+        guard components.count >= 2 else { return dateString }
+
+        let time = String(components[0])
+        let dateComponents = components[1].split(separator: "/")
+        guard dateComponents.count >= 3 else { return dateString }
+
+        let day = String(dateComponents[0]).padding(toLength: 2, withPad: "0", startingAt: 0)
+        let month = String(dateComponents[1]).padding(toLength: 2, withPad: "0", startingAt: 0)
+        let year = String(dateComponents[2])
+
+        return "\(year)-\(month)-\(day) \(time)"
     }
 
     private func calculatePriceRange(from chartData: [GoldChartDataPoint]) -> (Double, Double) {
@@ -314,16 +337,26 @@ struct GoldChartView: View {
         return (minPrice, maxPrice)
     }
 
-    private func formatDateForChart(_ dateString: String) -> String {
+    private func formatDateForChart(_ dateString: String, includeYear: Bool) -> String {
         // Input: "09:01:00 16/10/2025"
-        // Output: "16/10"
+        // Output: "16/10" or "16/10/25" depending on includeYear
         let components = dateString.split(separator: " ")
         guard components.count >= 2 else { return dateString }
 
         let dateComponents = components[1].split(separator: "/")
-        guard dateComponents.count >= 2 else { return String(components[1]) }
 
-        return "\(dateComponents[0])/\(dateComponents[1])"
+        if includeYear {
+            // Include year for long date ranges (>90 days)
+            guard dateComponents.count >= 3 else { return String(components[1]) }
+            let year = String(dateComponents[2])
+            // Use last 2 digits of year for compact display
+            let shortYear = year.count >= 2 ? String(year.suffix(2)) : year
+            return "\(dateComponents[0])/\(dateComponents[1])/\(shortYear)"
+        } else {
+            // Just day/month for short ranges
+            guard dateComponents.count >= 2 else { return String(components[1]) }
+            return "\(dateComponents[0])/\(dateComponents[1])"
+        }
     }
 
     private func formatPrice(_ price: Double) -> String {
@@ -344,7 +377,7 @@ struct GoldChartView: View {
     }
 
     private func extractDay(from dateString: String) -> String {
-        // Input: "16/10" -> Output: "16"
+        // Input: "16/10" or "16/10/25" -> Output: "16"
         let components = dateString.split(separator: "/")
         if components.count >= 1 {
             return String(components[0])
@@ -353,9 +386,16 @@ struct GoldChartView: View {
     }
 
     private func extractMonth(from dateString: String) -> String {
-        // Input: "16/10" -> Output: "Th10" (Tháng 10)
+        // Input: "16/10" -> Output: "T10" (Tháng 10)
+        // Input: "16/10/25" -> Output: "T10/25"
         let components = dateString.split(separator: "/")
-        if components.count >= 2 {
+        if components.count >= 3 {
+            // Has year: show month/year
+            let monthNum = String(components[1])
+            let year = String(components[2])
+            return "T\(monthNum)/\(year)"
+        } else if components.count >= 2 {
+            // No year: just show month
             let monthNum = String(components[1])
             return "T\(monthNum)"
         }
@@ -367,7 +407,8 @@ struct GoldChartView: View {
 
 struct GoldChartDataPoint: Identifiable {
     let id: String
-    let date: String
+    let date: String // Display date (formatted for axis)
+    let sortKey: String // Unique sort key with full timestamp
     let buyPrice: Double
     let sellPrice: Double
     let dateUpdate: String

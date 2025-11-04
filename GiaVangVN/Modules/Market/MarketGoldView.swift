@@ -29,7 +29,7 @@ struct MarketGoldView: View {
                             .frame(height: 1)
                             .id("scrollTop")
 
-                        VStack(spacing: 16) {
+                        VStack(alignment: .leading, spacing: 16) {
                             // Price in - out
                             if goldViewModel.isLoading {
                                 // Show loading placeholders
@@ -59,7 +59,7 @@ struct MarketGoldView: View {
 
                             // Biểu đồ
                             VStack {
-                                HStack {
+                                HStack(spacing: 10) {
                                     ForEach(ListRange.allCases, id: \.self) { item in
                                         MarketRangeItemView(range: item, isSelected: goldViewModel.range == item)
                                             .onTapGesture {
@@ -68,7 +68,7 @@ struct MarketGoldView: View {
                                             }
                                     }
                                     Spacer()
-                                }.frame(maxWidth: 500)
+                                }.frame(maxWidth: .infinity, alignment: .leading)
                                     .padding(.bottom, 10)
 
                                 if goldViewModel.isLoading {
@@ -92,7 +92,7 @@ struct MarketGoldView: View {
                                         .animation(.easeInOut(duration: 0.4), value: goldViewModel.goldData?.list.count)
                                 }
                             }
-                            .frame(maxWidth: .infinity)
+                            .frame(maxWidth: .infinity, alignment: .leading)
 
                             // List branch
                             VStack(spacing: 0) {
@@ -105,7 +105,7 @@ struct MarketGoldView: View {
                                     }
                                 }
                             }
-                        } // End inner VStack with spacing
+                        }.frame(maxWidth: .infinity, alignment: .leading) // End inner VStack with spacing
                     }
                     .padding(.horizontal, 16)
                     .padding(.top, 8)
@@ -232,19 +232,20 @@ struct MarketGoldView: View {
 struct MarketRangeItemView : View {
     var range: ListRange
     var isSelected: Bool
-    
+
     var body: some View {
-        HStack {
-            Text(range.title)
-                .font(.footnote)
-                .foregroundColor(isSelected ? Color(hex: "7FDF9A") : .white)
-            
-            if isSelected {
-                Divider()
-                    .frame(height: 1)
-                    .foregroundStyle(Color(hex: "7FDF9A"))
+        Text(range.title)
+            .font(.footnote)
+            .foregroundColor(isSelected ? Color(hex: "7FDF9A") : .white)
+            .padding(.bottom, 4)
+            .padding(4)
+            .overlay(alignment: .bottom) {
+                if isSelected {
+                    Rectangle()
+                        .fill(Color(hex: "7FDF9A"))
+                        .frame(height: 2)
+                }
             }
-        }
     }
 }
 

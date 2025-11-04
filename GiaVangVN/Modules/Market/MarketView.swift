@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftUIIntrospect
 
 struct MarketView: View {
     
@@ -25,10 +26,14 @@ struct MarketView: View {
                 TabView(selection: $viewModel.selectedTab) {
                     MarketGoldView()
                         .tag(MarketViewModel.MarketTab.Gold)
-                    
+
                     MarketCurrencyView()
                         .tag(MarketViewModel.MarketTab.Currency)
-                }.tabViewStyle(.page(indexDisplayMode: .never))
+                }
+                .tabViewStyle(.page(indexDisplayMode: .never))
+                .introspect(.scrollView, on: .iOS(.v16, .v17, .v18, .v26)) { scrollView in
+                    scrollView.isScrollEnabled = false
+                }
                 
             }.frame(maxWidth: .infinity, maxHeight: .infinity)
                 .navigationTitle("Thị trường")
