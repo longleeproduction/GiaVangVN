@@ -27,6 +27,11 @@ class GoldCalculatorViewModel: ObservableObject {
         return selectedUnit.toGrams(weightValue)
     }
 
+    var weightInChi: Double {
+        // Convert grams to chỉ (1 chỉ = 3.75 grams)
+        return weightInGrams / 3.75
+    }
+
     var pricePerGram: Double {
         guard let price = priceManager.getPrice(for: selectedGoldProduct) else {
             return 0

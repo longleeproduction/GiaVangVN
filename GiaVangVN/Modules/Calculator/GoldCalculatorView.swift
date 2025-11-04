@@ -14,6 +14,7 @@ struct GoldCalculatorView: View {
     @StateObject private var priceManager = GoldPriceManager.shared
     @State private var showingWeightConversion = false
     @State private var showingProductPicker = false
+    @State private var showingAddTransaction = false
 
     var body: some View {
         NavigationStack {
@@ -31,6 +32,9 @@ struct GoldCalculatorView: View {
                     // Total Price Display
                     totalPriceDisplay
 
+                    // Add to Wallet Button
+                    addToWalletButton
+
                     // Price Breakdown
                     priceBreakdownSection
 
@@ -45,6 +49,13 @@ struct GoldCalculatorView: View {
                 }
                 .sheet(isPresented: $showingProductPicker) {
                     productPickerSheet
+                }
+                .sheet(isPresented: $showingAddTransaction) {
+                    AddBuyTransactionView(
+                        initialProduct: viewModel.selectedGoldProduct,
+                        initialQuantity: viewModel.weightInChi,
+                        initialUnitPrice: priceManager.getPrice(for: viewModel.selectedGoldProduct)
+                    )
                 }
                 .task {
                     // Fetch prices if not available
@@ -326,6 +337,34 @@ struct GoldCalculatorView: View {
                 }
             }
         }.padding()
+    }
+
+    var addToWalletButton: some View {
+        Button(action: {
+            showingAddTransaction = true
+        }) {
+            HStack {
+                Image(systemName: "plus.circle.fill")
+                    .font(.title3)
+                Text("Thêm vào Ví Vàng")
+                    .font(.headline)
+            }
+            .foregroundColor(.white)
+            .frame(maxWidth: .infinity)
+            .padding()
+            .background(
+                LinearGradient(
+                    gradient: Gradient(colors: [Color.blue, Color.blue.opacity(0.8)]),
+                    startPoint: .leading,
+                    endPoint: .trailing
+                )
+            )
+            .cornerRadius(12)
+            .shadow(color: Color.blue.opacity(0.3), radius: 8, x: 0, y: 4)
+        }
+        .disabled(!priceManager.hasPrices || viewModel.weightInChi <= 0)
+        .opacity((!priceManager.hasPrices || viewModel.weightInChi <= 0) ? 0.5 : 1.0)
+        .padding(.horizontal)
     }
 }
 

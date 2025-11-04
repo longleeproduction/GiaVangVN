@@ -12,6 +12,11 @@ struct AddBuyTransactionView: View {
     @StateObject private var walletManager = WalletManager.shared
     @StateObject private var priceManager = GoldPriceManager.shared
 
+    // Optional initial values
+    var initialProduct: GoldBuyerProduct?
+    var initialQuantity: Double?
+    var initialUnitPrice: Double?
+
     @State private var selectedProduct: GoldBuyerProduct = .VangMiengSJC
     @State private var quantity: String = ""
     @State private var unitPrice: String = ""
@@ -142,6 +147,18 @@ struct AddBuyTransactionView: View {
                 // Fetch prices if not available
                 if !priceManager.hasPrices {
                     await priceManager.fetchAllPrices()
+                }
+            }
+            .onAppear {
+                // Set initial values if provided
+                if let product = initialProduct {
+                    selectedProduct = product
+                }
+                if let qty = initialQuantity {
+                    quantity = String(format: "%.2f", qty)
+                }
+                if let price = initialUnitPrice {
+                    unitPrice = String(format: "%.0f", price)
                 }
             }
         }
