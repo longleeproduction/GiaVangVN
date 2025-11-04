@@ -59,7 +59,7 @@ struct WeightUnitRow: View {
     let unit: WeightUnit
     let isSelected: Bool
     let onTap: () -> Void
-    
+
     var body: some View {
         Button(action: onTap) {
             HStack {
@@ -67,7 +67,7 @@ struct WeightUnitRow: View {
                     .font(.title2)
                     .foregroundColor(unit.color)
                     .frame(width: 40)
-                
+
                 VStack(alignment: .leading, spacing: 4) {
                     Text(unit.displayName)
                         .font(.headline)
@@ -76,13 +76,13 @@ struct WeightUnitRow: View {
                         .font(.caption)
                         .foregroundColor(.gray)
                 }
-                
+
                 Spacer()
-                
+
                 Text(unit.rawValue)
                     .font(.caption)
                     .foregroundColor(.gray)
-                
+
                 if isSelected {
                     Image(systemName: "checkmark")
                         .foregroundColor(.blue)
@@ -91,6 +91,7 @@ struct WeightUnitRow: View {
             }
             .padding()
             .background(isSelected ? unit.color.opacity(0.1) : Color.clear)
+            .contentShape(Rectangle())
         }
         .buttonStyle(PlainButtonStyle())
     }

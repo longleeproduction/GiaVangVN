@@ -10,6 +10,7 @@ import SwiftUI
 struct AddBuyTransactionView: View {
     @Environment(\.dismiss) var dismiss
     @StateObject private var walletManager = WalletManager.shared
+    @StateObject private var priceManager = GoldPriceManager.shared
 
     @State private var selectedProduct: GoldBuyerProduct = .VangMiengSJC
     @State private var quantity: String = ""
@@ -19,9 +20,6 @@ struct AddBuyTransactionView: View {
 
     @State private var showAlert: Bool = false
     @State private var alertMessage: String = ""
-
-    @State private var isLoadingPrice: Bool = false
-    @State private var suggestedPrice: String = ""
 
     var body: some View {
         NavigationStack {
@@ -48,9 +46,6 @@ struct AddBuyTransactionView: View {
                             .tag(product)
                         }
                     }
-                    .onChange(of: selectedProduct) { _ in
-                        fetchSuggestedPrice()
-                    }
                 }
 
                 // Transaction Details
@@ -72,7 +67,7 @@ struct AddBuyTransactionView: View {
                                 .multilineTextAlignment(.trailing)
                         }
 
-                        if !suggestedPrice.isEmpty {
+                        if let suggestedPrice = priceManager.getSellDisplayPrice(for: selectedProduct) {
                             HStack {
                                 Spacer()
                                 Button {
@@ -86,6 +81,15 @@ struct AddBuyTransactionView: View {
                                     }
                                     .foregroundColor(.blue)
                                 }
+                            }
+                        } else if priceManager.isLoading {
+                            HStack {
+                                Spacer()
+                                ProgressView()
+                                    .scaleEffect(0.8)
+                                Text("Đang tải giá...")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
                             }
                         }
                     }
@@ -134,40 +138,10 @@ struct AddBuyTransactionView: View {
             } message: {
                 Text(alertMessage)
             }
-            .onAppear {
-                fetchSuggestedPrice()
-            }
-        }
-    }
-
-    private func fetchSuggestedPrice() {
-        isLoadingPrice = true
-        suggestedPrice = ""
-
-        Task {
-            do {
-                let request = GoldPriceRequest(
-                    product: selectedProduct.rawValue,
-                    city: selectedProduct.city,
-                    lang: "vi",
-                    branch: selectedProduct.branch
-                )
-                let response = try await DashboardService.shared.fetchGoldPrice(request: request)
-
-                if let data = response.data {
-                    await MainActor.run {
-                        suggestedPrice = ApiDecryptor.decrypt(data.sellDisplay).replacingOccurrences(of: ",", with: "")
-                        isLoadingPrice = false
-                    }
-                } else {
-                    await MainActor.run {
-                        isLoadingPrice = false
-                    }
-                }
-            } catch {
-                print("Error fetching suggested price: \(error)")
-                await MainActor.run {
-                    isLoadingPrice = false
+            .task {
+                // Fetch prices if not available
+                if !priceManager.hasPrices {
+                    await priceManager.fetchAllPrices()
                 }
             }
         }

@@ -30,13 +30,13 @@ struct WeightConversionView: View {
     var conversionCards: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack {
-                Text("Weight Conversions")
+                Text("Chuyển đổi trọng lượng")
                     .font(.title2)
                     .fontWeight(.semibold)
                 
                 Spacer()
                 
-                Text("Selected unit first")
+                Text("Chọn đơn vị chuyển đổi")
                     .font(.caption)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 6)
@@ -76,7 +76,7 @@ struct WeightConversionView: View {
     
     var popularWeightUnits: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Popular Weight Units")
+            Text("Đơn vị trọng lượng phổ biến")
                 .font(.title3)
                 .fontWeight(.semibold)
                 .padding(.horizontal)
@@ -95,7 +95,7 @@ struct WeightConversionView: View {
                     )
                 }
             }
-            .background(Color.white)
+            .background(Color.white.opacity(0.1))
             .cornerRadius(12)
             .padding(.horizontal)
         }

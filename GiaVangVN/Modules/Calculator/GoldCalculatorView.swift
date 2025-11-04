@@ -11,34 +11,46 @@ import SwiftUI
 // MARK: - Main Calculator View
 struct GoldCalculatorView: View {
     @StateObject private var viewModel = GoldCalculatorViewModel()
+    @StateObject private var priceManager = GoldPriceManager.shared
     @State private var showingWeightConversion = false
-    
+    @State private var showingProductPicker = false
+
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 0) {
-                    // Gold Type Selector
-                    goldTypeSelector
-                    
+                VStack(spacing: 8) {
+                    // Gold Product Selector
+                    goldProductSelector
+
                     // Weight Input Section
                     weightInputSection
-                    
+
                     // Quick Weight Buttons
                     quickWeightButtons
-                    
+
                     // Total Price Display
                     totalPriceDisplay
-                    
+
                     // Price Breakdown
                     priceBreakdownSection
-                    
+
                     // Conversion
                     WeightConversionView(viewModel: viewModel)
+                        .padding(.bottom, 40)
                 }
                 .navigationTitle("Chuyển đổi")
                 .navigationBarTitleDisplayMode(.inline)
                 .sheet(isPresented: $showingWeightConversion) {
                     WeightConversionView(viewModel: viewModel)
+                }
+                .sheet(isPresented: $showingProductPicker) {
+                    productPickerSheet
+                }
+                .task {
+                    // Fetch prices if not available
+                    if !priceManager.hasPrices {
+                        await priceManager.fetchAllPrices()
+                    }
                 }
                 .onTapGesture {
                     hideKeyboard()
@@ -47,34 +59,101 @@ struct GoldCalculatorView: View {
         }
     }
     
-    var goldTypeSelector: some View {
-        HStack {
-            Circle()
-                .fill(Color.yellow)
-                .frame(width: 12, height: 12)
-            
-            VStack(alignment: .leading, spacing: 2) {
-                Text(viewModel.selectedGoldType.name)
-                    .font(.headline)
-                Text("\(viewModel.selectedGoldType.karat) • \(viewModel.selectedGoldType.purity) pure")
-                    .font(.caption)
-                    .foregroundColor(.gray)
+    var goldProductSelector: some View {
+        Button(action: {
+            showingProductPicker = true
+        }) {
+            HStack {
+                Circle()
+                    .fill(Color.yellow)
+                    .frame(width: 12, height: 12)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(viewModel.selectedGoldProduct.rawValue)
+                        .font(.headline)
+                        .foregroundColor(.primary)
+                    HStack(spacing: 4) {
+                        Text(viewModel.selectedGoldProduct.city)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        Text("•")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        Text(viewModel.selectedGoldProduct.branch.uppercased())
+                            .font(.caption)
+                            .foregroundColor(.blue)
+                    }
+                }
+
+                Spacer()
+
+                if priceManager.isLoading {
+                    ProgressView()
+                        .scaleEffect(0.8)
+                } else {
+                    Image(systemName: "chevron.right")
+                        .foregroundColor(.gray)
+                }
             }
-            
-            Spacer()
-            
-            Image(systemName: "chevron.right")
-                .foregroundColor(.gray)
+            .padding()
+            .background(Color(.secondarySystemBackground))
+            .cornerRadius(12)
+            .padding()
         }
-        .padding()
-        .background(Color.white.opacity(0.1))
-        .cornerRadius(12)
-        .padding()
+    }
+
+    var productPickerSheet: some View {
+        NavigationStack {
+            List {
+                ForEach(GoldBuyerProduct.allCases, id: \.self) { product in
+                    Button(action: {
+                        viewModel.selectedGoldProduct = product
+                        showingProductPicker = false
+                    }) {
+                        HStack {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(product.rawValue)
+                                    .font(.body)
+                                    .foregroundColor(.primary)
+
+                                HStack(spacing: 4) {
+                                    Text(product.city)
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                    Text("•")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                    Text(product.branch.uppercased())
+                                        .font(.caption)
+                                        .foregroundColor(.blue)
+                                }
+                            }
+
+                            Spacer()
+
+                            if viewModel.selectedGoldProduct == product {
+                                Image(systemName: "checkmark")
+                                    .foregroundColor(.blue)
+                            }
+                        }
+                    }
+                }
+            }
+            .navigationTitle("Chọn sản phẩm vàng")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Đóng") {
+                        showingProductPicker = false
+                    }
+                }
+            }
+        }
     }
     
     var weightInputSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Weight")
+            Text("Trọng lượng")
                 .font(.title2)
                 .fontWeight(.semibold)
                 .padding(.horizontal)
@@ -118,8 +197,8 @@ struct GoldCalculatorView: View {
     
     var quickWeightButtons: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Quick Weights")
-                .font(.title3)
+            Text("Chọn nhanh trọng lượng")
+                .font(.body)
                 .fontWeight(.semibold)
                 .padding(.horizontal)
             
@@ -150,12 +229,12 @@ struct GoldCalculatorView: View {
     var totalPriceDisplay: some View {
         VStack(spacing: 12) {
             HStack {
-                Text("Total Price")
+                Text("Tổng giá trị")
                     .font(.headline)
                     .foregroundColor(.gray)
-                
+
                 Spacer()
-                
+
                 Text("VND")
                     .font(.caption)
                     .padding(.horizontal, 12)
@@ -163,18 +242,31 @@ struct GoldCalculatorView: View {
                     .background(Color.orange.opacity(0.2))
                     .cornerRadius(8)
             }
-            
-            Text(viewModel.formattedPrice)
-                .font(.system(size: 36, weight: .bold))
-                .foregroundColor(.orange)
-            
-            Text("\(viewModel.selectedGoldType.name) • \(String(format: "%.2f", viewModel.weightInGrams)) g")
-                .font(.caption)
-                .foregroundColor(.gray)
-            
-            Text("≈ \(String(format: "%.2f", viewModel.weightInGrams))g")
-                .font(.caption)
-                .foregroundColor(.gray)
+
+            if priceManager.isLoading {
+                ProgressView()
+                    .padding()
+            } else if priceManager.hasPrices {
+                Text(viewModel.formattedPrice)
+                    .font(.system(size: 36, weight: .bold))
+                    .foregroundColor(.orange)
+
+                Text("\(viewModel.selectedGoldProduct.rawValue) • \(String(format: "%.2f", viewModel.weightInGrams)) g")
+                    .font(.caption)
+                    .foregroundColor(.gray)
+            } else {
+                VStack(spacing: 8) {
+                    Text("Không có dữ liệu giá")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Button("Tải lại") {
+                        Task {
+                            await priceManager.refreshPrices()
+                        }
+                    }
+                    .font(.caption)
+                }
+            }
         }
         .padding()
         .background(
@@ -190,41 +282,48 @@ struct GoldCalculatorView: View {
     
     var priceBreakdownSection: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Price Breakdown")
+            Text("Chi tiết giá")
                 .font(.headline)
                 .padding(.horizontal)
-            HStack {
-                Text("Price pergam:")
-                    .font(.caption)
-                    .foregroundColor(.gray)
-                    .padding(.horizontal)
-                Spacer()
-                Text("đ2,888,3234")
-                    .font(.caption)
-            }
-            
-            HStack {
-                Text("Weight in grams:")
-                    .font(.caption)
-                    .foregroundColor(.gray)
-                    .padding(.horizontal)
-                Spacer()
-                Text("31,104g")
-                    .font(.caption)
-            }
-            
-            Divider()
-            
-            HStack {
-                Text("Total:")
-                    .font(.caption)
-                    .fontWeight(.bold)
-                    .foregroundColor(.gray)
-                    .padding(.horizontal)
-                    
-                Spacer()
-                Text("đ122,888,3234")
-                    .font(.caption)
+
+            if priceManager.hasPrices {
+                HStack {
+                    Text("Giá mỗi gram:")
+                        .font(.caption)
+                        .foregroundColor(.gray)
+                        .padding(.horizontal)
+                    Spacer()
+                    Text(viewModel.formattedPricePerGram)
+                        .font(.caption)
+                        .padding(.horizontal)
+                }
+
+                HStack {
+                    Text("Khối lượng (gram):")
+                        .font(.caption)
+                        .foregroundColor(.gray)
+                        .padding(.horizontal)
+                    Spacer()
+                    Text(String(format: "%.2f g", viewModel.weightInGrams))
+                        .font(.caption)
+                        .padding(.horizontal)
+                }
+
+                Divider()
+
+                HStack {
+                    Text("Tổng cộng:")
+                        .font(.caption)
+                        .fontWeight(.bold)
+                        .foregroundColor(.gray)
+                        .padding(.horizontal)
+
+                    Spacer()
+                    Text(viewModel.formattedPrice)
+                        .font(.caption)
+                        .fontWeight(.bold)
+                        .padding(.horizontal)
+                }
             }
         }.padding()
     }

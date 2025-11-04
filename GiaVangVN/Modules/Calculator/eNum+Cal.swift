@@ -15,6 +15,7 @@ struct GoldType {
 }
 
 enum WeightUnit: String, CaseIterable {
+    case chi = "chỉ"
     case gram = "g"
     case ounce = "oz"
     case tola = "tola"
@@ -22,6 +23,7 @@ enum WeightUnit: String, CaseIterable {
 
     var displayName: String {
         switch self {
+        case .chi: return "Chỉ"
         case .gram: return "Gram"
         case .ounce: return "Ounce"
         case .tola: return "Tola"
@@ -31,15 +33,17 @@ enum WeightUnit: String, CaseIterable {
 
     var description: String {
         switch self {
-        case .gram: return "Standard metric unit"
-        case .ounce: return "Troy ounce (31.1g)"
-        case .tola: return "Traditional South Asian unit"
-        case .mithqal: return "Traditional Middle Eastern unit"
+        case .chi: return "Đơn vị vàng Việt Nam (3.75g)"
+        case .gram: return "Đơn vị chuẩn quốc tế"
+        case .ounce: return "Anh (31.1g)"
+        case .tola: return "Đơn vị Nam Á truyền thống"
+        case .mithqal: return "Đơn vị Trung Đông truyền thống"
         }
     }
 
     var icon: String {
         switch self {
+        case .chi: return "circle.hexagongrid"
         case .gram: return "scalemass"
         case .ounce: return "scalemass.fill"
         case .tola: return "diamond"
@@ -49,6 +53,7 @@ enum WeightUnit: String, CaseIterable {
 
     var color: Color {
         switch self {
+        case .chi: return .yellow
         case .gram: return .blue
         case .ounce: return .green
         case .tola: return .orange
@@ -59,6 +64,7 @@ enum WeightUnit: String, CaseIterable {
     // Convert to grams
     func toGrams(_ value: Double) -> Double {
         switch self {
+        case .chi: return value * 3.75
         case .gram: return value
         case .ounce: return value * 31.1035
         case .tola: return value * 11.6638
@@ -69,6 +75,7 @@ enum WeightUnit: String, CaseIterable {
     // Convert from grams
     func fromGrams(_ grams: Double) -> Double {
         switch self {
+        case .chi: return grams / 3.75
         case .gram: return grams
         case .ounce: return grams / 31.1035
         case .tola: return grams / 11.6638
