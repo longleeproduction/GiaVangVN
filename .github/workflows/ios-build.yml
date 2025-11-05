@@ -1,0 +1,175 @@
+name: Deploy to TestFlight
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  deploy:
+    name: Build and Deploy to TestFlight
+    runs-on: macos-26
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Select Xcode version
+        run: |
+          sudo xcode-select -s /Applications/Xcode_26.0.app/Contents/Developer
+          xcodebuild -version
+
+      - name: Cache SPM dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/Library/Developer/Xcode/DerivedData/*/SourcePackages
+            ~/.swiftpm
+          key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
+          restore-keys: |
+            ${{ runner.os }}-spm-
+
+      - name: Install dependencies
+        run: |
+          brew install xcodegen
+          brew install swiftlint
+
+      - name: Generate Xcode project
+        run: xcodegen generate
+
+      - name: Import certificates and provisioning profiles
+        env:
+          CERTIFICATE_BASE64: ${{ secrets.DISTRIBUTION_CERTIFICATE_BASE64 }}
+          CERTIFICATE_PASSWORD: ${{ secrets.DISTRIBUTION_CERTIFICATE_PASSWORD }}
+          PROVISIONING_PROFILE_MAIN_BASE64: ${{ secrets.PROVISIONING_PROFILE_APPSTORE_BASE64 }}
+          PROVISIONING_PROFILE_WATCH_BASE64: ${{ secrets.PROVISIONING_PROFILE_WATCH_BASE64 }}
+          PROVISIONING_PROFILE_WIDGET_BASE64: ${{ secrets.PROVISIONING_WIDGET_APPSTORE_BASE64 }}
+        run: |
+          # Create temporary keychain
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+          KEYCHAIN_PASSWORD=$(openssl rand -base64 32)
+
+          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+
+          # Import certificate
+          CERTIFICATE_PATH=$RUNNER_TEMP/certificate.p12
+          echo -n "$CERTIFICATE_BASE64" | base64 --decode -o $CERTIFICATE_PATH
+          security import $CERTIFICATE_PATH \
+            -P "$CERTIFICATE_PASSWORD" \
+            -A -t cert \
+            -f pkcs12 \
+            -k $KEYCHAIN_PATH
+
+          # Set keychain as default
+          security list-keychain -d user -s $KEYCHAIN_PATH
+          security default-keychain -s $KEYCHAIN_PATH
+
+          # Install provisioning profiles
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+
+          echo -n "$PROVISIONING_PROFILE_MAIN_BASE64" | base64 --decode -o ~/Library/MobileDevice/Provisioning\ Profiles/Gold_Waves__Appstore.mobileprovision
+          echo -n "$PROVISIONING_PROFILE_WIDGET_BASE64" | base64 --decode -o ~/Library/MobileDevice/Provisioning\ Profiles/Gold_Waves_Widget__Appstore.mobileprovision
+          echo -n "$PROVISIONING_PROFILE_WATCH_BASE64" | base64 --decode -o ~/Library/MobileDevice/Provisioning\ Profiles/Gold_Waves_Watch__Appstore.mobileprovision
+
+      - name: Increment build number
+        run: |
+          BUILD_NUMBER=${{ github.run_number }}
+          sed -i '' "s/CFBundleVersion: \"[0-9]*\"/CFBundleVersion: \"$BUILD_NUMBER\"/g" project.yml
+          xcodegen generate
+
+      - name: Build and archive
+        run: |
+          xcodebuild clean archive \
+            -project GiaVangVN.xcodeproj \
+            -scheme GiaVangVN \
+            -configuration Release \
+            -archivePath build/GiaVangVN.xcarchive \
+            -sdk iphoneos \
+            -allowProvisioningUpdates \
+            DEVELOPMENT_TEAM=C77T3ALUS5
+
+      - name: Export IPA
+        run: |
+          mkdir -p build/ipa-appstore
+
+          # Create ExportOptions.plist
+          cat > build/ExportOptions.plist <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+              <key>method</key>
+              <string>app-store</string>
+              <key>teamID</key>
+              <string>C77T3ALUS5</string>
+              <key>signingStyle</key>
+              <string>manual</string>
+              <key>provisioningProfiles</key>
+              <dict>
+                  <key>com.orientpro.goldwaves</key>
+                  <string>Gold Waves - Appstore</string>
+                  <key>com.orientpro.goldwaves.widget</key>
+                  <string>Gold Waves Widget - Appstore</string>
+                  <key>com.orientpro.goldwaves.watch</key>
+                  <string>Gold Waves Watch - Appstore</string>
+              </dict>
+              <key>uploadSymbols</key>
+              <true/>
+              <key>uploadBitcode</key>
+              <false/>
+          </dict>
+          </plist>
+          EOF
+
+          xcodebuild -exportArchive \
+            -archivePath build/GiaVangVN.xcarchive \
+            -exportPath build/ipa-appstore \
+            -exportOptionsPlist build/ExportOptions.plist \
+            -allowProvisioningUpdates
+
+      - name: Set up App Store Connect API Key
+        env:
+          ASC_PRIVATE_KEY_BASE64: ${{ secrets.ASC_PRIVATE_KEY_BASE64 }}
+        run: |
+          mkdir -p ~/.appstoreconnect/private_keys/
+          echo -n "$ASC_PRIVATE_KEY_BASE64" | base64 --decode -o ~/.appstoreconnect/private_keys/AuthKey_${{ secrets.ASC_KEY_ID }}.p8
+          chmod 600 ~/.appstoreconnect/private_keys/AuthKey_${{ secrets.ASC_KEY_ID }}.p8
+
+      - name: Validate IPA
+        run: |
+          echo "Validating IPA before upload..."
+          xcrun altool --validate-app \
+            --type ios \
+            --file build/ipa-appstore/GiaVangVN.ipa \
+            --apiKey ${{ secrets.ASC_KEY_ID }} \
+            --apiIssuer ${{ secrets.ASC_ISSUER_ID }}
+          echo "✅ IPA validation successful"
+
+      - name: Upload to TestFlight
+        run: |
+          echo "Uploading to TestFlight..."
+          xcrun altool --upload-app \
+            --type ios \
+            --file build/ipa-appstore/GiaVangVN.ipa \
+            --apiKey ${{ secrets.ASC_KEY_ID }} \
+            --apiIssuer ${{ secrets.ASC_ISSUER_ID }}
+          echo "✅ Upload complete. Build will appear in App Store Connect after processing."
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: GiaVangVN-${{ github.run_number }}.ipa
+          path: build/ipa-appstore/GiaVangVN.ipa
+          retention-days: 30
+
+      - name: Cleanup keychain
+        if: always()
+        run: |
+          security delete-keychain $RUNNER_TEMP/app-signing.keychain-db || true
+          rm -f ~/Library/MobileDevice/Provisioning\ Profiles/Gold_Waves__Appstore.mobileprovision || true
+          rm -f ~/Library/MobileDevice/Provisioning\ Profiles/Gold_Waves_Widget__Appstore.mobileprovision || true
+          rm -f ~/Library/MobileDevice/Provisioning\ Profiles/Gold_Waves_Watch__Appstore.mobileprovision || true
+          rm -rf ~/.appstoreconnect/private_keys/ || true
