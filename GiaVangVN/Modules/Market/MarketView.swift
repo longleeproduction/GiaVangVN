@@ -56,6 +56,9 @@ struct MarketView: View {
                 .fullScreenCover(isPresented: $isPresentedSetting) {
                     SettingView()
                 }
+                .task {
+                    AdsManager.shared().showInterstitialAd()
+                }
         }
     }
 }

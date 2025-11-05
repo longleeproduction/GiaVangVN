@@ -130,6 +130,8 @@ struct CurrencyDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .task {
             viewModel.getListCurrency(code: item.code, branch: currencyType.rawValue)
+            
+            AdsManager.shared().showInterstitialAd()
         }
     }
 

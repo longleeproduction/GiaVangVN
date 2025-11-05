@@ -24,14 +24,14 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 //        ]
 //
 //        // Start Mobile Ads SDK asynchronously
-//        MobileAds.shared.start { _ in
-//            // Load ads after SDK initialization completes
-//            DispatchQueue.main.async {
-//                AdsManager.shared().loadConsentForm()
-//                AdsOpenApp.shared().requestOpenAppAds()
-//                AdsManager.shared().loadInterstitialAdDiscover()
-//            }
-//        }
+        MobileAds.shared.start { _ in
+            // Load ads after SDK initialization completes
+            DispatchQueue.main.async {
+                AdsManager.shared().loadConsentForm()
+                AdsOpenApp.shared().requestOpenAppAds()
+                AdsManager.shared().loadInterstitialAd()
+            }
+        }
         
         SwiftRater.daysUntilPrompt = 7
         SwiftRater.usesUntilPrompt = 10
@@ -45,7 +45,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     
     //MARK: Life cirle
     func applicationDidBecomeActive() {
-//        AdsOpenApp.shared().tryToPresentAd()
+        AdsOpenApp.shared().tryToPresentAd()
     }
     
     func applicationDidEnterBackground() {

@@ -75,6 +75,8 @@ struct GoldCalculatorView: View {
                     )
                 }
                 .task {
+                    AdsManager.shared().showInterstitialAd()
+                    
                     // Fetch prices if not available
                     if !priceManager.hasPrices {
                         await priceManager.fetchAllPrices()

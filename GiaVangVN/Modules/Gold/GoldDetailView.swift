@@ -28,6 +28,9 @@ struct GoldDetailView: View {
         .onAppear {
             viewModel.getGoldDetail(product: goldProductName, branch: branch, city: city)
         }
+        .task {
+            AdsManager.shared().showInterstitialAd()
+        }
     }
 
     @ViewBuilder

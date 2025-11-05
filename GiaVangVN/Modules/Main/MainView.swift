@@ -34,7 +34,7 @@ struct MainView: View {
             MarketView()
                 .tag(MainTabItem.market)
                 .tabItem {
-                    Label("Thị trường", systemImage: "chart.bar.xaxis")
+                    Label("Thị trường", systemImage: "chart.line.uptrend.xyaxis")
                 }
             
             GoldView()

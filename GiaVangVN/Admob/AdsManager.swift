@@ -13,27 +13,27 @@ struct Admob {
     static let nativeId             = "ca-app-pub-3940256099942544/2521693316"
     static let openAppId            = "ca-app-pub-3940256099942544/5575463023"
     static let fullScreenId         = "ca-app-pub-3940256099942544/4411468910"
-    static let rewardId             = "ca-app-pub-3940256099942544/1712485313"
 #else
-    static let bannerId             = "ca-app-pub-4191574836195894/4820306125"
-    static let nativeId             = "ca-app-pub-4191574836195894/4153850464"
-    static let openAppId            = "ca-app-pub-4191574836195894/8205017368"
-    static let fullScreenId         = "ca-app-pub-4191574836195894/1952560089"
-    static let rewardId           = "ca-app-pub-4191574836195894/5011027756"
+    static let bannerId             = "ca-app-pub-5018745952984578/1305690245"
+    static let nativeId             = "ca-app-pub-5018745952984578/6991722281"
+    static let openAppId            = "ca-app-pub-5018745952984578/4533079901"
+    static let fullScreenId         = "ca-app-pub-5018745952984578/9180284814"
 #endif
 
 }
 
 
 class AdsManager: NSObject, FullScreenContentDelegate {
-    
+
     private static let sharedInstance = AdsManager()
-    
+
     static func shared() -> AdsManager {
         return sharedInstance
     }
-    
+
     private var interstitial: InterstitialAd?
+    private var interstitialLastShowed: Date?
+    private var cooldownAdsTime: Double = 5 // unit minute -
     private var completeFullScreenAds: AdmobVoidComplete?
     
     private var interstitialDiscover: InterstitialAd?
@@ -103,10 +103,26 @@ class AdsManager: NSObject, FullScreenContentDelegate {
             }
             return
         }
+                
         self.completeFullScreenAds = nil
         if interstitial != nil {
+
+            // Check 2: Cooldown period - don't show ads more than once per minute
+            if let date = interstitialLastShowed {
+                let timeSinceLastAd = Date.now.timeIntervalSince(date)
+                if timeSinceLastAd < cooldownAdsTime * 60 { // 5 minute cooldown between ads
+                    if let action = complete {
+                        action()
+                    }
+                    debugPrint("[AdsManager] ---> Not show ads \(cooldownAdsTime) minute cooldown between ads")
+                    return
+                }
+            }
+
+            // Both checks passed, show the ad
             if let controller = UIApplication.shared.topMostViewController {
                 interstitial?.present(from: controller)
+                interstitialLastShowed = Date.now
                 self.completeFullScreenAds = complete
             } else {
                 if let action = complete {

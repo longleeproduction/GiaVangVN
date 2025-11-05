@@ -81,6 +81,9 @@ struct GoldView: View {
             .fullScreenCover(isPresented: $isPresentedSetting) {
                 SettingView()
             }
+            .task {
+                AdsManager.shared().showInterstitialAd()
+            }
         }
     }
 

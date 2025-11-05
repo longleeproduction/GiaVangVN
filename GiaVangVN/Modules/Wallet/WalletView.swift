@@ -57,6 +57,9 @@ struct WalletView: View {
             .refreshable {
                 viewModel.refresh()
             }
+            .task {
+                AdsManager.shared().showInterstitialAd()
+            }
         }
     }
 

@@ -113,6 +113,8 @@ struct NewsView: View {
                 SettingView()
             }
             .task {
+                AdsManager.shared().showInterstitialAd()
+                
                 await viewModel.refreshData()
             }
         }

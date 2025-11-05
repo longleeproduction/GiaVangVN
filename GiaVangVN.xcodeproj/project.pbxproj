@@ -16,6 +16,7 @@
 		5D620B672EA9DEA300F0A219 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5D620B662EA9DEA300F0A219 /* WidgetKit.framework */; };
 		5D620B692EA9DEA300F0A219 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5D620B682EA9DEA300F0A219 /* SwiftUI.framework */; };
 		5D620B7A2EA9DEA400F0A219 /* GiaVang WidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 5D620B642EA9DEA300F0A219 /* GiaVang WidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		5DA3ECFB2EB9FD8C0047D82B /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 5DA3ECFA2EB9FD8C0047D82B /* Kingfisher */; };
 		5DB0B1E42EA5F68E003962E0 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 5DB0B1E32EA5F68E003962E0 /* README.md */; };
 		5DB0B1FB2EA62B34003962E0 /* GiaVang Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 5DB0B1F12EA62B33003962E0 /* GiaVang Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		5DB0B31D2EA789DA003962E0 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = 5DB0B31C2EA789DA003962E0 /* GoogleMobileAds */; };
@@ -189,6 +190,7 @@
 				5D114B082EB3208C00A7C08F /* ActivityIndicatorView in Frameworks */,
 				5D3871CD2EB1FABB00C657E9 /* SwiftUIIntrospect in Frameworks */,
 				5D3871D02EB1FACB00C657E9 /* SwiftyStoreKit in Frameworks */,
+				5DA3ECFB2EB9FD8C0047D82B /* Kingfisher in Frameworks */,
 				5D114B0B2EB320A200A7C08F /* EmailComposer in Frameworks */,
 				5DB0B31D2EA789DA003962E0 /* GoogleMobileAds in Frameworks */,
 				5D4DA3472E9F9E7100426F54 /* SwifterSwift in Frameworks */,
@@ -276,6 +278,7 @@
 				5D114B072EB3208C00A7C08F /* ActivityIndicatorView */,
 				5D114B0A2EB320A200A7C08F /* EmailComposer */,
 				5D114B0D2EB320DB00A7C08F /* SwiftRater */,
+				5DA3ECFA2EB9FD8C0047D82B /* Kingfisher */,
 			);
 			productName = GiaVangVN;
 			productReference = 5D4DA30C2E9F95A300426F54 /* GiaVangVN.app */;
@@ -363,6 +366,7 @@
 				5D114B062EB3208C00A7C08F /* XCRemoteSwiftPackageReference "ActivityIndicatorView" */,
 				5D114B092EB320A200A7C08F /* XCRemoteSwiftPackageReference "EmailComposer" */,
 				5D114B0C2EB320DB00A7C08F /* XCRemoteSwiftPackageReference "SwiftRater" */,
+				5DA3ECF92EB9FD8C0047D82B /* XCRemoteSwiftPackageReference "Kingfisher" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 5D4DA30D2E9F95A300426F54 /* Products */;
@@ -870,6 +874,14 @@
 				minimumVersion = 8.0.0;
 			};
 		};
+		5DA3ECF92EB9FD8C0047D82B /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/onevcat/Kingfisher";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.6.1;
+			};
+		};
 		5DB0B31B2EA789DA003962E0 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/googleads/swift-package-manager-google-mobile-ads";
@@ -910,6 +922,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 5D4DA3452E9F9E7100426F54 /* XCRemoteSwiftPackageReference "SwifterSwift" */;
 			productName = SwifterSwift;
+		};
+		5DA3ECFA2EB9FD8C0047D82B /* Kingfisher */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5DA3ECF92EB9FD8C0047D82B /* XCRemoteSwiftPackageReference "Kingfisher" */;
+			productName = Kingfisher;
 		};
 		5DB0B31C2EA789DA003962E0 /* GoogleMobileAds */ = {
 			isa = XCSwiftPackageProductDependency;
