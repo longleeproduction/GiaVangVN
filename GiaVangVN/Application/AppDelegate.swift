@@ -9,6 +9,7 @@ import Foundation
 import UIKit
 import GoogleMobileAds
 import SwiftRater
+import AppTrackingTransparency
 
 class AppDelegate: NSObject, UIApplicationDelegate {
     
@@ -46,6 +47,17 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     //MARK: Life cirle
     func applicationDidBecomeActive() {
         AdsOpenApp.shared().tryToPresentAd()
+        
+        // Request ATT if not already requested (especially important for iPad)
+        if ATTrackingManager.trackingAuthorizationStatus == .notDetermined {
+            // Delay slightly to ensure UI is ready
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                ATTrackingManager.requestTrackingAuthorization { status in
+                    debugPrint("ATT Status: \(status.rawValue)")
+                }
+            }
+        }
+
     }
     
     func applicationDidEnterBackground() {

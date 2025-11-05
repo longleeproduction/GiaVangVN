@@ -5,6 +5,8 @@
 //  Created by ORL on 15/10/25.
 //
 import SwiftUI
+import Combine
+import AppTrackingTransparency
 
 enum MainTabItem: Hashable {
     case market
@@ -13,6 +15,17 @@ enum MainTabItem: Hashable {
     case news
     case gold
     case settings
+}
+
+class MainViewModel: ObservableObject {
+    
+    init() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            ATTrackingManager.requestTrackingAuthorization { status in
+                debugPrint("ATT Status: \(status.rawValue)")
+            }
+        }
+    }
 }
 
 struct MainView: View {
@@ -28,6 +41,9 @@ struct MainView: View {
     private var walletIconName: String {
         isIOS18OrLater ? "wallet.bifold" : "wallet.pass"
     }
+    
+    
+    @StateObject private var viewModel = MainViewModel()
 
     var body: some View {
         TabView {
